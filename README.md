@@ -39,9 +39,8 @@ AstraFlow Lite is built as a microservices architecture:
 
 - Docker and Docker Compose
 - Python 3.11+
-- Node.js 18+ (for frontend)
-- OpenAI API key
-- Google Gemini API key
+- OpenAI API key (optional)
+- Google Gemini API key (optional)
 
 ## Quick Start
 

@@ -166,7 +166,7 @@
         async function loadCollections() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:8000/collections', {
+                const response = await fetch('http://localhost:8000/api/collections', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

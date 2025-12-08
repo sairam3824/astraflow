@@ -123,6 +123,7 @@ async def home():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>AstraFlow</h1>")
 
+@app.get("/login.html", response_class=HTMLResponse)
 @app.get("/login", response_class=HTMLResponse)
 async def login_page():
     html_file = TEMPLATES_DIR / "login.html"
@@ -130,13 +131,54 @@ async def login_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Login</h1>")
 
-@app.get("/collections", response_class=HTMLResponse)
+@app.get("/dashboard.html", response_class=HTMLResponse)
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page():
+    html_file = TEMPLATES_DIR / "dashboard.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text())
+    return HTMLResponse(content="<h1>Dashboard</h1>")
+
+@app.get("/collections.html", response_class=HTMLResponse)
 async def collections_page():
     html_file = TEMPLATES_DIR / "collections.html"
     if html_file.exists():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Collections</h1>")
 
+@app.get("/workspace.html", response_class=HTMLResponse)
+@app.get("/workspace", response_class=HTMLResponse)
+async def workspace_page():
+    html_file = TEMPLATES_DIR / "workspace.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text())
+    return HTMLResponse(content="<h1>Workspace</h1>")
+
+@app.get("/workflows.html", response_class=HTMLResponse)
+@app.get("/workflows", response_class=HTMLResponse)
+async def workflows_page():
+    html_file = TEMPLATES_DIR / "workflows.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text())
+    return HTMLResponse(content="<h1>Workflows</h1>")
+
+@app.get("/stocks.html", response_class=HTMLResponse)
+@app.get("/stocks", response_class=HTMLResponse)
+async def stocks_page():
+    html_file = TEMPLATES_DIR / "stocks.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text())
+    return HTMLResponse(content="<h1>Stocks</h1>")
+
+@app.get("/settings.html", response_class=HTMLResponse)
+@app.get("/settings", response_class=HTMLResponse)
+async def settings_page():
+    html_file = TEMPLATES_DIR / "settings.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text())
+    return HTMLResponse(content="<h1>Settings</h1>")
+
+@app.get("/rag.html", response_class=HTMLResponse)
 @app.get("/rag", response_class=HTMLResponse)
 async def rag_page():
     html_file = TEMPLATES_DIR / "rag.html"
@@ -144,6 +186,7 @@ async def rag_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>RAG Search</h1>")
 
+@app.get("/chat.html", response_class=HTMLResponse)
 @app.get("/chat", response_class=HTMLResponse)
 async def chat_page():
     html_file = TEMPLATES_DIR / "chat.html"
@@ -163,8 +206,8 @@ class CollectionResponse(BaseModel):
     domain: Optional[str] = None
     created_at: str
 
-# Collection Endpoints
-@app.post("/collections", response_model=CollectionResponse)
+# Collection API Endpoints
+@app.post("/api/collections", response_model=CollectionResponse)
 async def create_collection(req: CreateCollectionRequest, user_id: str = Depends(get_current_user)):
     import chromadb
     from libs.utils.config import config
@@ -200,7 +243,7 @@ async def create_collection(req: CreateCollectionRequest, user_id: str = Depends
         logger.error(f"Failed to create collection: {e}")
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/collections")
+@app.get("/api/collections")
 async def list_collections(user_id: str = Depends(get_current_user)):
     cursor = await db.conn.execute(
         "SELECT * FROM collections WHERE owner_id = ?", (user_id,)
@@ -218,7 +261,7 @@ async def list_collections(user_id: str = Depends(get_current_user)):
         for row in rows
     ]
 
-@app.delete("/collections/{collection_id}")
+@app.delete("/api/collections/{collection_id}")
 async def delete_collection(collection_id: str, user_id: str = Depends(get_current_user)):
     import chromadb
     from libs.utils.config import config
@@ -265,7 +308,7 @@ class DocumentResponse(BaseModel):
     created_at: str
 
 # Document Endpoints
-@app.post("/collections/{collection_id}/upload", response_model=UploadResponse)
+@app.post("/api/collections/{collection_id}/upload", response_model=UploadResponse)
 async def upload_document(collection_id: str, req: UploadRequest, user_id: str = Depends(get_current_user)):
     from .minio_client import minio_client
     
@@ -297,7 +340,7 @@ async def upload_document(collection_id: str, req: UploadRequest, user_id: str =
 class IngestRequest(BaseModel):
     object_name: str
 
-@app.post("/collections/{collection_id}/ingest")
+@app.post("/api/collections/{collection_id}/ingest")
 async def ingest_document(collection_id: str, req: IngestRequest, user_id: str = Depends(get_current_user)):
     from services.celery_worker.celery_app import ingest_document_task
     
@@ -345,8 +388,8 @@ class MessageResponse(BaseModel):
     content: str
     created_at: str
 
-# Chat Endpoints
-@app.post("/chat/sessions", response_model=ChatSessionResponse)
+# Chat API Endpoints
+@app.post("/api/chat/sessions", response_model=ChatSessionResponse)
 async def create_chat_session(req: CreateChatSessionRequest, user_id: str = Depends(get_current_user)):
     session_id = str(uuid.uuid4())
     
@@ -370,7 +413,7 @@ async def create_chat_session(req: CreateChatSessionRequest, user_id: str = Depe
         created_at=row[4]
     )
 
-@app.post("/chat/sessions/{session_id}/messages", response_model=MessageResponse)
+@app.post("/api/chat/sessions/{session_id}/messages", response_model=MessageResponse)
 async def send_message(session_id: str, req: SendMessageRequest, user_id: str = Depends(get_current_user)):
     # Verify session ownership
     cursor = await db.conn.execute(
@@ -405,7 +448,7 @@ async def send_message(session_id: str, req: SendMessageRequest, user_id: str = 
     )
 
 # RAG Search Endpoint
-@app.get("/collections/{collection_id}/search")
+@app.get("/api/collections/{collection_id}/search")
 async def search_collection(
     collection_id: str,
     query: str,

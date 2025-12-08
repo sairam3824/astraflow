@@ -44,13 +44,10 @@ logs/*.pid
 *.sqlite
 *.sqlite3
 
-# Node
-node_modules/
-.next/
-out/
-web/.next/
-web/node_modules/
-web/out/
+# Node (removed - using HTML templates now)
+# node_modules/
+# .next/
+# out/
 
 # OS
 .DS_Store

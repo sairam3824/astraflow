@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stocks - AstraFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <div class="font-semibold text-gray-900 mb-1">User</div>
+                <div class="text-sm text-gray-500">Admin</div>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </a>
+                <a href="/dashboard.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/collections.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📚</span>
+                    <span>Collections</span>
+                </a>
+                <a href="/workspace.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>💬</span>
+                    <span>Workspace</span>
+                </a>
+                <a href="/workflows.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>⚙️</span>
+                    <span>Workflows</span>
+                </a>
+                <a href="/stocks.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
+                    <span>📈</span>
+                    <span>Stocks</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-1">Market Stream</h1>
+                        <p class="text-sm text-gray-500">Kafka Topic: market.ticks</p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-3">
+                        <select id="symbolSelect" class="px-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option>AAPL</option>
+                            <option>GOOGL</option>
+                            <option>MSFT</option>
+                            <option>TSLA</option>
+                            <option>AMZN</option>
+                        </select>
+                        
+                        <span class="flex items-center text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                            Live Streaming
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                    <!-- Main Chart -->
+                    <div class="lg:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900" id="chartSymbol">AAPL</h2>
+                                <div class="flex items-center space-x-3 mt-1">
+                                    <span class="text-2xl font-bold text-gray-900" id="currentPrice">$178.23</span>
+                                    <span class="text-sm text-green-600 bg-green-50 px-2 py-1 rounded">+2.34%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">1D</button>
+                                <button class="px-3 py-1.5 text-sm bg-purple-50 text-purple-600 rounded-lg">1W</button>
+                                <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">1M</button>
+                                <button class="px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">1Y</button>
+                            </div>
+                        </div>
+
+                        <canvas id="priceChart" height="80"></canvas>
+                    </div>
+
+                    <!-- Indicators Panel -->
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">Technical Indicators</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">SMA (20)</span>
+                                        <span class="text-sm font-semibold text-green-600" id="smaValue">$178.45</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-green-500 rounded-full transition-all" style="width: 65%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">RSI</span>
+                                        <span class="text-sm font-semibold text-yellow-600" id="rsiValue">62.3</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                        <div id="rsiBar" class="h-full bg-yellow-500 rounded-full transition-all" style="width: 62%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-sm text-gray-600">Volatility</span>
+                                        <span class="text-sm font-semibold text-gray-900" id="volatilityValue">1.8%</span>
+                                    </div>
+                                    <div class="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-purple-500 rounded-full transition-all" style="width: 36%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Volume</span>
+                                        <span class="text-sm font-semibold text-gray-900" id="volumeValue">52.3M</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-sm p-6 text-white">
+                            <h3 class="font-semibold mb-3">AI Analysis</h3>
+                            <p class="text-sm opacity-90 leading-relaxed">Strong bullish momentum detected. RSI indicates healthy buying pressure. Consider entry points near support levels.</p>
+                            <button class="mt-4 w-full px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors">Get Full Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kafka Console -->
+                <div class="bg-gray-900 rounded-xl shadow-sm border border-gray-700 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-green-400 text-sm font-mono">●</span>
+                            <h3 class="font-semibold text-white">Kafka Stream Console</h3>
+                            <span class="text-xs text-gray-400">market.ticks</span>
+                        </div>
+                        <button class="text-xs text-gray-400 hover:text-white" onclick="document.getElementById('kafkaLogs').innerHTML = ''">Clear</button>
+                    </div>
+                    
+                    <div class="p-6 font-mono text-xs text-green-400 h-64 overflow-y-auto" id="kafkaLogs"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize chart
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const chartData = [];
+        const basePrice = 175;
+        
+        for (let i = 0; i < 50; i++) {
+            chartData.push({
+                x: i,
+                y: basePrice + Math.random() * 10 - 5
+            });
+        }
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    data: chartData,
+                    borderColor: '#9333ea',
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        grid: { color: '#f0f0f0' },
+                        ticks: { color: '#9ca3af' }
+                    }
+                }
+            }
+        });
+
+        // Kafka logs simulation
+        const kafkaLogs = document.getElementById('kafkaLogs');
+        const symbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN'];
+        
+        function addKafkaLog() {
+            const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+            const price = (175 + Math.random() * 10).toFixed(2);
+            const volume = Math.floor(Math.random() * 1000000) + 500000;
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'mb-2 hover:bg-gray-800 px-2 py-1 rounded';
+            logEntry.innerHTML = `
+                <span class="text-gray-500">[${timestamp}]</span>
+                <span class="text-blue-400">TRADE</span>
+                <span class="text-yellow-400">${symbol}</span>
+                <span class="text-white">price:</span> ${price}
+                <span class="text-white">volume:</span> ${volume.toLocaleString()}
+            `;
+            
+            kafkaLogs.insertBefore(logEntry, kafkaLogs.firstChild);
+            
+            // Keep only last 20 logs
+            while (kafkaLogs.children.length > 20) {
+                kafkaLogs.removeChild(kafkaLogs.lastChild);
+            }
+        }
+
+        // Update indicators
+        function updateIndicators() {
+            const rsi = Math.max(0, Math.min(100, parseFloat(document.getElementById('rsiValue').textContent) + (Math.random() - 0.5) * 5));
+            document.getElementById('rsiValue').textContent = rsi.toFixed(1);
+            document.getElementById('rsiBar').style.width = rsi + '%';
+            
+            const rsiBar = document.getElementById('rsiBar');
+            if (rsi > 70) {
+                rsiBar.className = 'h-full bg-red-500 rounded-full transition-all';
+            } else if (rsi < 30) {
+                rsiBar.className = 'h-full bg-green-500 rounded-full transition-all';
+            } else {
+                rsiBar.className = 'h-full bg-yellow-500 rounded-full transition-all';
+            }
+        }
+
+        // Start simulations
+        setInterval(addKafkaLog, 2000);
+        setInterval(updateIndicators, 3000);
+        
+        // Initial logs
+        for (let i = 0; i < 5; i++) {
+            addKafkaLog();
+        }
+    </script>
+</body>
+</html>

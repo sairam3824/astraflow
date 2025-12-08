@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflows - AstraFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <div class="font-semibold text-gray-900 mb-1">User</div>
+                <div class="text-sm text-gray-500">Admin</div>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </a>
+                <a href="/dashboard.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/collections.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📚</span>
+                    <span>Collections</span>
+                </a>
+                <a href="/workspace.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>💬</span>
+                    <span>Workspace</span>
+                </a>
+                <a href="/workflows.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
+                    <span>⚙️</span>
+                    <span>Workflows</span>
+                </a>
+                <a href="/stocks.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📈</span>
+                    <span>Stocks</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Canvas -->
+            <div class="flex-1 relative bg-white" style="background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px); background-size: 20px 20px;">
+                <!-- Floating Toolbar -->
+                <div class="absolute top-6 left-1/2 transform -translate-x-1/2 z-10">
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 px-4 py-3 flex items-center space-x-3">
+                        <button class="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600">+ Add Node</button>
+                        <div class="w-px h-6 bg-gray-200"></div>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium">Test Run</button>
+                        <button class="px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-sm font-medium">Save JSON</button>
+                        <div class="w-px h-6 bg-gray-200"></div>
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <span class="text-lg">↩️</span>
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-gray-600">
+                            <span class="text-lg">↪️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SVG for connections -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" id="connectionsSvg"></svg>
+
+                <!-- Nodes Container -->
+                <div id="nodesContainer"></div>
+
+                <!-- Node Palette -->
+                <div class="absolute bottom-6 left-6 bg-white rounded-xl shadow-lg border border-gray-200 p-4">
+                    <div class="text-sm font-semibold text-gray-900 mb-3">Node Types</div>
+                    <div class="space-y-2">
+                        <button class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
+                            <span class="text-xl">▶️</span>
+                            <span class="text-sm text-gray-700">Start</span>
+                        </button>
+                        <button class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
+                            <span class="text-xl">🔍</span>
+                            <span class="text-sm text-gray-700">Vector Search</span>
+                        </button>
+                        <button class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
+                            <span class="text-xl">🔀</span>
+                            <span class="text-sm text-gray-700">Router</span>
+                        </button>
+                        <button class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
+                            <span class="text-xl">🤖</span>
+                            <span class="text-sm text-gray-700">LLM</span>
+                        </button>
+                        <button class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
+                            <span class="text-xl">🔧</span>
+                            <span class="text-sm text-gray-700">Tool</span>
+                        </button>
+                        <button class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-left">
+                            <span class="text-xl">✅</span>
+                            <span class="text-sm text-gray-700">End</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties Panel -->
+            <div id="propertiesPanel" class="w-96 bg-white border-l border-gray-200 overflow-y-auto hidden absolute right-0 top-0 bottom-0">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-semibold text-gray-900">Node Properties</h3>
+                        <button id="closeProperties" class="text-gray-400 hover:text-gray-600">✕</button>
+                    </div>
+
+                    <div class="space-y-6" id="propertiesContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const nodes = [
+            { id: 1, type: 'start', label: 'Ingest PDF', icon: '📄', x: 100, y: 200 },
+            { id: 2, type: 'process', label: 'Vector Search', icon: '🔍', x: 300, y: 200 },
+            { id: 3, type: 'router', label: 'Router', icon: '🔀', x: 500, y: 200 },
+            { id: 4, type: 'llm', label: 'LLM: Gemini', icon: '🤖', x: 700, y: 150 },
+            { id: 5, type: 'llm', label: 'LLM: OpenAI', icon: '🤖', x: 700, y: 250 },
+            { id: 6, type: 'end', label: 'Response', icon: '✅', x: 900, y: 200 }
+        ];
+
+        const connections = [
+            { from: 1, to: 2 },
+            { from: 2, to: 3 },
+            { from: 3, to: 4 },
+            { from: 3, to: 5 },
+            { from: 4, to: 6 },
+            { from: 5, to: 6 }
+        ];
+
+        let selectedNode = null;
+
+        // Render nodes
+        const nodesContainer = document.getElementById('nodesContainer');
+        nodes.forEach(node => {
+            const nodeEl = document.createElement('div');
+            nodeEl.className = 'absolute cursor-pointer transition-all';
+            nodeEl.style.left = node.x + 'px';
+            nodeEl.style.top = node.y + 'px';
+            nodeEl.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg border-2 border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all w-40 p-4">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <span class="text-2xl">${node.icon}</span>
+                        <div class="flex-1">
+                            <div class="font-semibold text-sm text-gray-900">${node.label}</div>
+                            <div class="text-xs text-gray-500">${node.type}</div>
+                        </div>
+                    </div>
+                    ${node.type === 'router' ? '<div class="mt-2 pt-2 border-t border-gray-200"><div class="text-xs text-gray-500">2 branches</div></div>' : ''}
+                    ${node.type === 'llm' ? `<div class="mt-2 pt-2 border-t border-gray-200"><div class="text-xs text-gray-500">Model: ${node.label.split(': ')[1]}</div></div>` : ''}
+                </div>
+            `;
+            
+            nodeEl.addEventListener('click', () => {
+                selectedNode = node;
+                showProperties(node);
+            });
+            
+            nodesContainer.appendChild(nodeEl);
+        });
+
+        // Render connections
+        const svg = document.getElementById('connectionsSvg');
+        connections.forEach(conn => {
+            const fromNode = nodes.find(n => n.id === conn.from);
+            const toNode = nodes.find(n => n.id === conn.to);
+            
+            const x1 = fromNode.x + 160;
+            const y1 = fromNode.y + 40;
+            const x2 = toNode.x;
+            const y2 = toNode.y + 40;
+            const midX = (x1 + x2) / 2;
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`);
+            path.setAttribute('stroke', '#9333ea');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke-dasharray', '5,5');
+            
+            svg.appendChild(path);
+        });
+
+        // Properties panel
+        function showProperties(node) {
+            const panel = document.getElementById('propertiesPanel');
+            const content = document.getElementById('propertiesContent');
+            
+            let html = `
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Node Type</label>
+                    <div class="px-4 py-3 bg-gray-50 rounded-lg text-sm text-gray-900">${node.type}</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
+                    <input type="text" value="${node.label}" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+            `;
+            
+            if (node.type === 'llm') {
+                html += `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Model</label>
+                        <select class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option>GPT-4</option>
+                            <option>Gemini 1.5 Pro</option>
+                            <option>Claude 3 Opus</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Temperature</label>
+                        <input type="range" min="0" max="1" step="0.1" value="0.7" class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Precise</span>
+                            <span>Creative</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (node.type === 'router') {
+                html += `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Routing Logic</label>
+                        <textarea class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm" rows="6">if (query.complexity > 0.7) {
+  return "gemini";
+} else {
+  return "openai";
+}</textarea>
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div class="pt-4 border-t border-gray-200">
+                    <button class="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100">Delete Node</button>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            panel.classList.remove('hidden');
+        }
+
+        document.getElementById('closeProperties').addEventListener('click', () => {
+            document.getElementById('propertiesPanel').classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

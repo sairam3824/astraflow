@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace - AstraFlow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <div class="font-semibold text-gray-900 mb-1">User</div>
+                <div class="text-sm text-gray-500">Admin</div>
+            </div>
+
+            <nav class="p-4 space-y-1">
+                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>🏠</span>
+                    <span>Home</span>
+                </a>
+                <a href="/dashboard.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/collections.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📚</span>
+                    <span>Collections</span>
+                </a>
+                <a href="/workspace.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
+                    <span>💬</span>
+                    <span>Workspace</span>
+                </a>
+                <a href="/workflows.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>⚙️</span>
+                    <span>Workflows</span>
+                </a>
+                <a href="/stocks.html" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📈</span>
+                    <span>Stocks</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Collection Manager -->
+        <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-4 border-b border-gray-200">
+                <h2 class="font-semibold text-gray-900 mb-3">Current Collection</h2>
+                <button class="w-full px-4 py-2 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors">+ Upload Document</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4">
+                <div class="space-y-2" id="filesContainer"></div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="flex-1 flex flex-col bg-white">
+            <!-- Model Selector -->
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <label class="text-sm font-medium text-gray-700">Model:</label>
+                    <select id="modelSelect" class="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option>Auto-Router</option>
+                        <option>GPT-4</option>
+                        <option>Gemini 1.5 Pro</option>
+                        <option>Claude 3 Opus</option>
+                    </select>
+                    <button id="toggleContext" class="ml-auto px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg">Show Context</button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6" id="messagesContainer">
+                <div class="flex justify-start">
+                    <div class="max-w-2xl bg-gray-100 text-gray-900 rounded-2xl px-6 py-4">
+                        <div class="text-sm leading-relaxed">Hello! I can help you analyze documents in your collection. What would you like to know?</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex items-end space-x-3">
+                    <button class="p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg">
+                        <span class="text-xl">📎</span>
+                    </button>
+                    <textarea id="messageInput" placeholder="Ask about your documents..." class="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500" rows="3"></textarea>
+                    <button id="sendBtn" class="px-6 py-3 bg-purple-500 text-white rounded-lg font-medium hover:bg-purple-600 transition-colors">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Context Panel -->
+        <div id="contextPanel" class="w-96 bg-gray-50 border-l border-gray-200 overflow-y-auto hidden">
+            <div class="p-6">
+                <h3 class="font-semibold text-gray-900 mb-4">Retrieved Context</h3>
+                
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg border border-gray-200 p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-900">Q3_Financial_Report.pdf</span>
+                            <span class="text-xs text-gray-500">Page 12</span>
+                        </div>
+                        <div class="text-sm text-gray-600 leading-relaxed">"Revenue growth of 23% YoY driven primarily by expansion in the APAC region..."</div>
+                        <div class="mt-3 pt-3 border-t border-gray-200">
+                            <div class="text-xs text-gray-500">Relevance: 95%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load files
+        const files = [
+            { id: 1, name: 'Q3_Financial_Report.pdf', status: 'indexed', pages: 45 },
+            { id: 2, name: 'Legal_Contract_2024.pdf', status: 'indexed', pages: 23 },
+            { id: 3, name: 'Market_Analysis.pdf', status: 'processing', pages: 67 }
+        ];
+
+        const filesContainer = document.getElementById('filesContainer');
+        files.forEach(file => {
+            const statusClass = file.status === 'indexed' ? 'text-green-600' : 'text-yellow-600 animate-pulse';
+            const statusText = file.status === 'indexed' ? 'Indexed' : 'Processing';
+            
+            filesContainer.innerHTML += `
+                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer border border-gray-200">
+                    <div class="text-2xl">📄</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="font-medium text-sm text-gray-900 truncate">${file.name}</div>
+                        <div class="text-xs text-gray-500">${file.pages} pages</div>
+                        <div class="flex items-center mt-1">
+                            <span class="flex items-center text-xs ${statusClass}">
+                                <span class="w-1.5 h-1.5 bg-current rounded-full mr-1"></span>
+                                ${statusText}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        // Toggle context panel
+        const contextPanel = document.getElementById('contextPanel');
+        const toggleBtn = document.getElementById('toggleContext');
+        let showContext = false;
+
+        toggleBtn.addEventListener('click', () => {
+            showContext = !showContext;
+            contextPanel.classList.toggle('hidden');
+            toggleBtn.textContent = showContext ? 'Hide Context' : 'Show Context';
+        });
+
+        // Send message
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            messagesContainer.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="max-w-2xl bg-purple-500 text-white rounded-2xl px-6 py-4">
+                        <div class="text-sm leading-relaxed">${message}</div>
+                    </div>
+                </div>
+            `;
+
+            messageInput.value = '';
+
+            // Show thinking
+            messagesContainer.innerHTML += `
+                <div class="flex justify-start" id="thinking">
+                    <div class="bg-gray-100 rounded-2xl px-6 py-4">
+                        <div class="flex items-center space-x-2 text-gray-500">
+                            <div class="flex space-x-1">
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            </div>
+                            <span class="text-sm">Thinking...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Simulate AI response
+            setTimeout(() => {
+                document.getElementById('thinking').remove();
+                messagesContainer.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="max-w-2xl bg-gray-100 text-gray-900 rounded-2xl px-6 py-4">
+                            <div class="text-sm leading-relaxed">Based on the Q3 Financial Report, revenue increased by 23% compared to Q2. The main drivers were increased sales in the APAC region and successful product launches.</div>
+                            <div class="mt-3 pt-3 border-t border-gray-200 space-y-1">
+                                <div class="text-xs text-gray-600 flex items-center space-x-2">
+                                    <span>📎</span>
+                                    <span>Q3_Financial_Report.pdf (p.12)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                showContext = true;
+                contextPanel.classList.remove('hidden');
+                toggleBtn.textContent = 'Hide Context';
+            }, 2000);
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
