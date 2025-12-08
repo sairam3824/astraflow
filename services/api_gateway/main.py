@@ -123,7 +123,6 @@ async def home():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>AstraFlow</h1>")
 
-@app.get("/login.html", response_class=HTMLResponse)
 @app.get("/login", response_class=HTMLResponse)
 async def login_page():
     html_file = TEMPLATES_DIR / "login.html"
@@ -131,7 +130,6 @@ async def login_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Login</h1>")
 
-@app.get("/dashboard.html", response_class=HTMLResponse)
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page():
     html_file = TEMPLATES_DIR / "dashboard.html"
@@ -139,14 +137,13 @@ async def dashboard_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Dashboard</h1>")
 
-@app.get("/collections.html", response_class=HTMLResponse)
+@app.get("/collections", response_class=HTMLResponse)
 async def collections_page():
     html_file = TEMPLATES_DIR / "collections.html"
     if html_file.exists():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Collections</h1>")
 
-@app.get("/workspace.html", response_class=HTMLResponse)
 @app.get("/workspace", response_class=HTMLResponse)
 async def workspace_page():
     html_file = TEMPLATES_DIR / "workspace.html"
@@ -154,7 +151,6 @@ async def workspace_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Workspace</h1>")
 
-@app.get("/workflows.html", response_class=HTMLResponse)
 @app.get("/workflows", response_class=HTMLResponse)
 async def workflows_page():
     html_file = TEMPLATES_DIR / "workflows.html"
@@ -162,7 +158,6 @@ async def workflows_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Workflows</h1>")
 
-@app.get("/stocks.html", response_class=HTMLResponse)
 @app.get("/stocks", response_class=HTMLResponse)
 async def stocks_page():
     html_file = TEMPLATES_DIR / "stocks.html"
@@ -170,7 +165,6 @@ async def stocks_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Stocks</h1>")
 
-@app.get("/settings.html", response_class=HTMLResponse)
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page():
     html_file = TEMPLATES_DIR / "settings.html"
@@ -178,7 +172,6 @@ async def settings_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>Settings</h1>")
 
-@app.get("/rag.html", response_class=HTMLResponse)
 @app.get("/rag", response_class=HTMLResponse)
 async def rag_page():
     html_file = TEMPLATES_DIR / "rag.html"
@@ -186,7 +179,6 @@ async def rag_page():
         return HTMLResponse(content=html_file.read_text())
     return HTMLResponse(content="<h1>RAG Search</h1>")
 
-@app.get("/chat.html", response_class=HTMLResponse)
 @app.get("/chat", response_class=HTMLResponse)
 async def chat_page():
     html_file = TEMPLATES_DIR / "chat.html"

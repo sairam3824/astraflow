@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AstraFlow - AI Platform</title>
+    <title>Home - AstraFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
@@ -18,29 +18,29 @@
 
             <!-- Main Navigation -->
             <nav class="p-4 space-y-1 border-b border-gray-200">
-                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
+                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-900 text-sm">
                     <span>🏠</span>
                     <span>Home</span>
                 </a>
-                <a href="/collections" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
-                    <span>📚</span>
-                    <span>AstraFlow AI</span>
+                <a href="/dashboard" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📊</span>
+                    <span>Dashboard</span>
                 </a>
-                <a href="/collections" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
-                    <span>📋</span>
+                <a href="/collections" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📚</span>
                     <span>Collections</span>
                 </a>
-                <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
+                <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>💬</span>
-                    <span>Chat</span>
+                    <span>Workspace</span>
                 </a>
-                <a href="/analytics" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
-                    <span>📊</span>
-                    <span>Analytics</span>
-                </a>
-                <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
+                <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>⚙️</span>
                     <span>Workflows</span>
+                </a>
+                <a href="/stocks" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📈</span>
+                    <span>Stocks</span>
                 </a>
             </nav>
 
@@ -48,13 +48,13 @@
             <div class="flex-1 p-4">
                 <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">MY PROJECTS</div>
                 <div class="space-y-1">
-                    <a href="/collections?project=document-analysis" class="block px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
+                    <a href="/collections?project=document-analysis" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                         Document Analysis
                     </a>
-                    <a href="/stocks" class="block px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
+                    <a href="/stocks" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                         Stock Research
                     </a>
-                    <a href="/github" class="block px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm">
+                    <a href="/collections?project=github" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                         GitHub Docs
                     </a>
                 </div>
@@ -62,7 +62,7 @@
 
             <!-- Settings & Date -->
             <div class="p-4 border-t border-gray-200">
-                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-blue-600 hover:bg-blue-50 text-sm mb-2">
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
                     <span>⚙️</span>
                     <span>Settings</span>
                 </a>
@@ -72,16 +72,16 @@
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
-            <div class="p-8">
+            <div class="p-8 max-w-7xl mx-auto">
                 <!-- Header -->
                 <div class="mb-8">
-                    <h1 class="text-4xl font-bold text-gray-900 mb-2">Hello, <span id="userNameHeader">User</span></h1>
-                    <p class="text-gray-600 mb-6">How can I help you today?</p>
-                    <div class="flex gap-2 flex-wrap">
-                        <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">+ Add AI</button>
-                        <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">Get tasks updates</button>
-                        <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">Create workspace</button>
-                        <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50">Connect apps</button>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">Hello, <span id="userNameHeader">User</span></h1>
+                    <p class="text-xl text-gray-400 mb-4">How can I help you today?</p>
+                    <div class="flex gap-3 flex-wrap">
+                        <button class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-colors">+ Add AI</button>
+                        <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">Get tasks updates</button>
+                        <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">Create workspace</button>
+                        <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">Connect apps</button>
                     </div>
                 </div>
 
@@ -89,36 +89,42 @@
                     <!-- Collections Card -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-xl font-bold text-gray-900">📚 My Collections</h2>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg">📚</span>
+                                <h2 class="text-lg font-semibold text-gray-900">My Collections</h2>
+                            </div>
                             <button class="text-gray-400 hover:text-gray-600">⋯</button>
                         </div>
                         
                         <div id="collectionsContainer">
                             <div class="text-center py-8 text-gray-500">
                                 <div class="mb-2">No collections yet</div>
-                                <button class="text-sm text-blue-600 hover:text-blue-700 font-medium">+ Create your first collection</button>
+                                <button onclick="window.location.href='/collections'" class="text-sm text-blue-600 hover:text-blue-700 font-medium">+ Create your first collection</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Quick Actions -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">⚡ Quick Actions</h2>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <span class="text-lg">⚡</span>
+                            <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+                        </div>
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <button class="p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-center">
+                            <button onclick="window.location.href='/collections'" class="p-6 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors text-center">
                                 <div class="text-3xl mb-2">📄</div>
                                 <div class="text-sm font-medium text-gray-900">Upload Document</div>
                             </button>
-                            <button class="p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-center">
+                            <button onclick="window.location.href='/chat'" class="p-6 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors text-center">
                                 <div class="text-3xl mb-2">💬</div>
                                 <div class="text-sm font-medium text-gray-900">Start Chat</div>
                             </button>
-                            <button class="p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-center">
+                            <button onclick="window.location.href='/stocks'" class="p-6 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors text-center">
                                 <div class="text-3xl mb-2">📈</div>
                                 <div class="text-sm font-medium text-gray-900">Analyze Stock</div>
                             </button>
-                            <button class="p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-center">
+                            <button onclick="window.location.href='/workflows'" class="p-6 border border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 transition-colors text-center">
                                 <div class="text-3xl mb-2">🔄</div>
                                 <div class="text-sm font-medium text-gray-900">Run Workflow</div>
                             </button>
@@ -127,29 +133,35 @@
 
                     <!-- Stats -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-xl font-bold text-gray-900 mb-6">📊 Your Activity</h2>
+                        <div class="flex items-center space-x-2 mb-6">
+                            <span class="text-lg">📊</span>
+                            <h2 class="text-lg font-semibold text-gray-900">Your Activity</h2>
+                        </div>
                         <div class="space-y-4">
                             <div>
-                                <div class="text-sm text-gray-600">Total Collections</div>
-                                <div class="text-2xl font-bold text-gray-900" id="statsCollections">0</div>
+                                <div class="text-sm text-gray-600 mb-1">Total Collections</div>
+                                <div class="text-3xl font-bold text-gray-900" id="statsCollections">0</div>
                             </div>
                             <div>
-                                <div class="text-sm text-gray-600">Documents Processed</div>
-                                <div class="text-2xl font-bold text-gray-900" id="statsDocuments">0</div>
+                                <div class="text-sm text-gray-600 mb-1">Documents Processed</div>
+                                <div class="text-3xl font-bold text-gray-900" id="statsDocuments">0</div>
                             </div>
                             <div>
-                                <div class="text-sm text-gray-600">AI Queries</div>
-                                <div class="text-2xl font-bold text-gray-900" id="statsQueries">0</div>
+                                <div class="text-sm text-gray-600 mb-1">AI Queries</div>
+                                <div class="text-3xl font-bold text-gray-900" id="statsQueries">0</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Recent Activity -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-xl font-bold text-gray-900 mb-4">🕐 Recent Activity</h2>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <span class="text-lg">🕐</span>
+                            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+                        </div>
                         
                         <div id="activityContainer" class="space-y-3">
-                            <div class="text-sm text-gray-500 text-center py-4">No recent activity</div>
+                            <div class="text-sm text-gray-500 text-center py-8">No recent activity</div>
                         </div>
                     </div>
                 </div>
@@ -159,18 +171,32 @@
 
     <script>
         // Set current date
-        const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        document.getElementById('sidebarDate').textContent = currentDate;
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        document.getElementById('sidebarDate').textContent = dateStr;
 
         // Load collections
         async function loadCollections() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:8000/api/collections', {
+                if (!token) {
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:8080/api/collections', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
+                
+                if (!response.ok) {
+                    return;
+                }
+                
                 const collections = await response.json();
                 
                 const container = document.getElementById('collectionsContainer');
@@ -187,7 +213,7 @@
                     container.innerHTML = collections.slice(0, 5).map(col => `
                         <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer mb-2" onclick="window.location.href='/collections'">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-xl">📁</div>
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-xl">📁</div>
                                 <div>
                                     <div class="font-medium text-gray-900">${col.name}</div>
                                     <div class="text-xs text-gray-500">${col.domain || 'General'}</div>

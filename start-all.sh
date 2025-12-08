@@ -42,14 +42,6 @@ if [ ! -d "venv" ]; then
     pip install -r requirements.txt
 fi
 
-# Install frontend dependencies if needed
-if [ ! -d "web/node_modules" ]; then
-    echo -e "${GREEN}Installing frontend dependencies...${NC}"
-    cd web
-    npm install
-    cd ..
-fi
-
 # Start backend services in background
 echo -e "${GREEN}Starting backend services...${NC}"
 
@@ -92,18 +84,11 @@ echo $! > logs/celery.pid
 # Wait a bit for backend to start
 sleep 5
 
-# Start frontend
-echo -e "${GREEN}Starting frontend...${NC}"
-cd web
-npm run dev > ../logs/frontend.log 2>&1 &
-echo $! > ../logs/frontend.pid
-cd ..
-
 echo ""
 echo -e "${GREEN}✓ AstraFlow Lite is starting up!${NC}"
 echo ""
 echo "Access points:"
-echo "  Frontend:      http://localhost:3000"
+echo "  Frontend:      http://localhost:8080"
 echo "  API Gateway:   http://localhost:8080"
 echo "  Prometheus:    http://localhost:9090"
 echo "  Grafana:       http://localhost:3001 (admin/admin)"
