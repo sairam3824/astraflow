@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+  
+  - job_name: 'ingestion-service'
+    static_configs:
+      - targets: ['host.docker.internal:8001']
+  
+  - job_name: 'embedding-service'
+    static_configs:
+      - targets: ['host.docker.internal:8002']
+  
+  - job_name: 'agent-router'
+    static_configs:
+      - targets: ['host.docker.internal:8003']
+  
+  - job_name: 'workflow-runner'
+    static_configs:
+      - targets: ['host.docker.internal:8004']
+  
+  - job_name: 'stock-producer'
+    static_configs:
+      - targets: ['host.docker.internal:8005']
+  
+  - job_name: 'stock-analysis'
+    static_configs:
+      - targets: ['host.docker.internal:8006']
+  
+  - job_name: 'github-analysis'
+    static_configs:
+      - targets: ['host.docker.internal:8007']
