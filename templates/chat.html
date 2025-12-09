@@ -56,6 +56,10 @@
                     <span>⚙️</span>
                     <span>Settings</span>
                 </a>
+                <button onclick="logout()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm mb-2">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
                 <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
             </div>
         </aside>
@@ -161,7 +165,7 @@
         async function loadCollections() {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:8000/collections', {
+                const response = await fetch('http://localhost:8080/api/collections', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 collections = await response.json();
@@ -188,7 +192,14 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:8000/chat/sessions', {
+                
+                if (!token) {
+                    alert('Please login first');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:8080/api/chat/sessions', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -196,6 +207,12 @@
                     },
                     body: JSON.stringify({ model, collection_id: collectionId })
                 });
+
+                if (response.status === 401) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                    return;
+                }
 
                 const session = await response.json();
                 currentSessionId = session.id;
@@ -212,6 +229,11 @@
                 addMessageToUI('assistant', `Hi, ${userName}! How can I help you today?`);
                 
                 hideNewChatModal();
+                
+                // Enable input and button
+                document.getElementById('messageInput').disabled = false;
+                document.getElementById('sendButton').disabled = false;
+                document.getElementById('messageInput').placeholder = 'Type your message...';
                 document.getElementById('messageInput').focus();
             } catch (error) {
                 console.error('Error creating chat session:', error);
@@ -221,7 +243,7 @@
 
         async function sendMessage() {
             if (!currentSessionId) {
-                alert('Please start a chat session first');
+                showNewChatModal();
                 return;
             }
 
@@ -236,7 +258,7 @@
 
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8000/chat/sessions/${currentSessionId}/messages`, {
+                const response = await fetch(`http://localhost:8080/api/chat/sessions/${currentSessionId}/messages`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -247,11 +269,8 @@
 
                 const message = await response.json();
                 
-                // TODO: Get AI response from agent_router service
-                // For now, show a placeholder
-                setTimeout(() => {
-                    addMessageToUI('assistant', 'AI response will be implemented when agent_router service is connected.');
-                }, 500);
+                // Add AI response to UI
+                addMessageToUI('assistant', message.content);
 
             } catch (error) {
                 console.error('Error sending message:', error);
@@ -317,7 +336,7 @@
             
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8000/api/chat/sessions/${currentSessionId}/model`, {
+                const response = await fetch(`http://localhost:8080/api/chat/sessions/${currentSessionId}/model`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -345,13 +364,58 @@
 
         // Show welcome message on page load
         function showWelcomeMessage() {
-            const userName = document.getElementById('userName').textContent || 'there';
-            addMessageToUI('assistant', `Hi, ${userName}! How can I help you today?`);
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-center p-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-3xl mb-4">
+                        💬
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome to AI Chat</h2>
+                    <p class="text-gray-600 mb-6">Start a conversation with AI models like GPT-4 or Gemini Pro</p>
+                    <button onclick="showNewChatModal()" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium">
+                        + Start New Chat
+                    </button>
+                    <div class="mt-8 text-left max-w-md">
+                        <p class="text-sm text-gray-500 mb-2">✨ Features:</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Conversation memory - AI remembers your chat</li>
+                            <li>• Multiple AI models - GPT-4, Gemini Pro, and more</li>
+                            <li>• Document chat - Connect to your collections</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            // Disable input until session is created
+            document.getElementById('messageInput').disabled = true;
+            document.getElementById('sendButton').disabled = true;
+            document.getElementById('messageInput').placeholder = 'Start a chat session first...';
+        }
+
+        // Check authentication on page load
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to use the chat');
+                window.location.href = '/login';
+                return false;
+            }
+            return true;
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
         }
 
         // Load collections and show welcome message on page load
-        loadCollections();
-        showWelcomeMessage();
+        if (checkAuth()) {
+            loadCollections();
+            showWelcomeMessage();
+        }
     </script>
 </body>
 </html>

@@ -45,12 +45,15 @@
             <div class="flex-1"></div>
 
             <div class="p-4 border-t border-gray-200">
-                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm mb-2">
                     <span>⚙️</span>
                     <span>Settings</span>
                 </a>
-            </div>
-        </aside>
+                            <button onclick="logout()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm">
+                    <span>🚪</span>
+                    <span>Logout</span>
+                </button>
+            
 
         <!-- Main Content -->
         <main class="flex-1 overflow-y-auto">
@@ -71,7 +74,15 @@
     </div>
 
     <script>
-        const tabs = [
+                // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        }
+
+const tabs = [
             { id: 'general', label: 'General', icon: '⚙️' },
             { id: 'models', label: 'AI Models', icon: '🤖' },
             { id: 'integrations', label: 'Integrations', icon: '🔌' },

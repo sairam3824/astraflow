@@ -71,6 +71,8 @@ async def log_requests(request, call_next):
 class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -88,8 +90,8 @@ async def register(req: RegisterRequest):
     
     try:
         await db.conn.execute(
-            "INSERT INTO users (id, email, hashed_password) VALUES (?, ?, ?)",
-            (user_id, req.email, hashed_pw)
+            "INSERT INTO users (id, email, hashed_password, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
+            (user_id, req.email, hashed_pw, req.first_name, req.last_name)
         )
         await db.conn.commit()
     except Exception as e:
@@ -460,19 +462,37 @@ class MessageResponse(BaseModel):
 @app.post("/api/chat/sessions", response_model=ChatSessionResponse)
 async def create_chat_session(req: CreateChatSessionRequest, user_id: str = Depends(get_current_user)):
     session_id = str(uuid.uuid4())
+    model = req.model or "gpt-4"
     
+    # Create session in database
     await db.conn.execute(
         "INSERT INTO chat_sessions (id, user_id, model, collection_id) VALUES (?, ?, ?, ?)",
-        (session_id, user_id, req.model, req.collection_id)
+        (session_id, user_id, model, req.collection_id)
     )
     await db.conn.commit()
+    
+    # Initialize session in chat service with LangChain memory
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                "http://localhost:8090/sessions",
+                json={
+                    "session_id": session_id,
+                    "model": model,
+                    "system_prompt": "You are a helpful AI assistant. Provide clear, accurate, and friendly responses."
+                },
+                timeout=10.0
+            )
+    except Exception as e:
+        logger.error(f"Error initializing chat service session: {e}")
+        # Continue anyway, session will be created on first message
     
     cursor = await db.conn.execute(
         "SELECT * FROM chat_sessions WHERE id = ?", (session_id,)
     )
     row = await cursor.fetchone()
     
-    logger.info(f"Chat session created: {session_id}")
+    logger.info(f"Chat session created: {session_id} with model {model}")
     return ChatSessionResponse(
         id=row[0],
         user_id=row[1],
@@ -492,6 +512,8 @@ async def send_message(session_id: str, req: SendMessageRequest, user_id: str = 
     if not row or row[0] != user_id:
         raise HTTPException(status_code=403, detail="Not authorized")
     
+    session_model = row[1] or "gpt-4"
+    
     # Store user message
     msg_id = str(uuid.uuid4())
     await db.conn.execute(
@@ -502,18 +524,51 @@ async def send_message(session_id: str, req: SendMessageRequest, user_id: str = 
     
     logger.info(f"Message sent in session {session_id}")
     
-    cursor = await db.conn.execute(
-        "SELECT * FROM chat_messages WHERE id = ?", (msg_id,)
-    )
-    msg_row = await cursor.fetchone()
-    
-    return MessageResponse(
-        id=msg_row[0],
-        session_id=msg_row[1],
-        role=msg_row[2],
-        content=msg_row[3],
-        created_at=msg_row[5]
-    )
+    # Call chat service to get AI response
+    try:
+        async with httpx.AsyncClient() as client:
+            chat_response = await client.post(
+                "http://localhost:8090/chat",
+                json={
+                    "session_id": session_id,
+                    "message": req.content,
+                    "model": session_model
+                },
+                timeout=30.0
+            )
+            
+            if chat_response.status_code == 200:
+                ai_response = chat_response.json()
+                
+                # Store AI response
+                ai_msg_id = str(uuid.uuid4())
+                await db.conn.execute(
+                    "INSERT INTO chat_messages (id, session_id, role, content) VALUES (?, ?, ?, ?)",
+                    (ai_msg_id, session_id, "assistant", ai_response["message"])
+                )
+                await db.conn.commit()
+                
+                logger.info(f"AI response stored for session {session_id}")
+                
+                # Return the AI response
+                cursor = await db.conn.execute(
+                    "SELECT * FROM chat_messages WHERE id = ?", (ai_msg_id,)
+                )
+                ai_msg_row = await cursor.fetchone()
+                
+                return MessageResponse(
+                    id=ai_msg_row[0],
+                    session_id=ai_msg_row[1],
+                    role=ai_msg_row[2],
+                    content=ai_msg_row[3],
+                    created_at=ai_msg_row[5]
+                )
+            else:
+                raise HTTPException(status_code=500, detail="Chat service error")
+                
+    except Exception as e:
+        logger.error(f"Error calling chat service: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get AI response: {str(e)}")
 
 class UpdateModelRequest(BaseModel):
     model: str

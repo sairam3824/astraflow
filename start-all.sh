@@ -61,6 +61,10 @@ echo "Starting Agent Router..."
 python -m services.agent_router.main > logs/agent_router.log 2>&1 &
 echo $! > logs/agent_router.pid
 
+echo "Starting Chat Service..."
+python -m services.chat_service.main > logs/chat_service.log 2>&1 &
+echo $! > logs/chat_service.pid
+
 echo "Starting Workflow Runner..."
 python -m services.workflow_runner.main > logs/workflow_runner.log 2>&1 &
 echo $! > logs/workflow_runner.pid

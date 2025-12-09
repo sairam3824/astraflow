@@ -22,6 +22,8 @@ class Database:
                 id TEXT PRIMARY KEY,
                 email TEXT UNIQUE NOT NULL,
                 hashed_password TEXT NOT NULL,
+                first_name TEXT,
+                last_name TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
             
