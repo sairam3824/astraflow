@@ -15,7 +15,7 @@
                 <div class="text-sm text-gray-500">Admin</div>
             </div>
 
-            <nav class="p-4 space-y-1">
+            <nav class="p-4 space-y-1 border-b border-gray-200">
                 <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>🏠</span>
                     <span>Home</span>
@@ -29,7 +29,7 @@
                     <span>Collections</span>
                 </a>
                 <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
-                    <span>💬</span>
+                    <span>💼</span>
                     <span>Workspace</span>
                 </a>
                 <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
@@ -45,6 +45,16 @@
                     <span>Stocks</span>
                 </a>
             </nav>
+
+            <div class="flex-1"></div>
+
+            <div class="p-4 border-t border-gray-200">
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
+            </div>
         </aside>
 
         <!-- Collection Manager -->
@@ -118,6 +128,15 @@
     </div>
 
     <script>
+        // Set current date
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        document.getElementById('sidebarDate').textContent = dateStr;
+
         // Load files
         const files = [
             { id: 1, name: 'Q3_Financial_Report.pdf', status: 'indexed', pages: 45 },

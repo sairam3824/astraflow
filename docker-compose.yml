@@ -108,6 +108,277 @@ services:
       timeout: 5s
       retries: 5
 
+  # Python Services
+  api_gateway:
+    build:
+      context: .
+      dockerfile: services/api_gateway/Dockerfile
+    ports:
+      - "8080:8000"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=documents
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRATION_HOURS=24
+      - API_GATEWAY_PORT=8000
+      - INGESTION_SERVICE_PORT=8001
+      - EMBEDDING_SERVICE_PORT=8002
+      - AGENT_ROUTER_PORT=8003
+      - WORKFLOW_RUNNER_PORT=8004
+      - STOCK_PRODUCER_PORT=8005
+      - STOCK_ANALYSIS_PORT=8006
+      - GITHUB_ANALYSIS_PORT=8007
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./templates:/app/templates
+    depends_on:
+      - redis
+      - minio
+      - chromadb
+      - kafka
+    command: python -m services.api_gateway.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: services/ingestion/Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=documents
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - INGESTION_SERVICE_PORT=8001
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - minio
+      - chromadb
+      - kafka
+    command: python -m services.ingestion.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  embedding:
+    build:
+      context: .
+      dockerfile: services/embedding/Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - EMBEDDING_SERVICE_PORT=8002
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - chromadb
+      - kafka
+    command: python -m services.embedding.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  agent_router:
+    build:
+      context: .
+      dockerfile: services/agent_router/Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - AGENT_ROUTER_PORT=8003
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - chromadb
+      - kafka
+    command: python -m services.agent_router.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  workflow_runner:
+    build:
+      context: .
+      dockerfile: services/workflow_runner/Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - WORKFLOW_RUNNER_PORT=8004
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - chromadb
+      - kafka
+    command: python -m services.workflow_runner.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  stock_producer:
+    build:
+      context: .
+      dockerfile: services/stock_producer/Dockerfile
+    ports:
+      - "8005:8005"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - STOCK_PRODUCER_PORT=8005
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - kafka
+    command: python -m services.stock_producer.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  stock_analysis:
+    build:
+      context: .
+      dockerfile: services/stock_analysis/Dockerfile
+    ports:
+      - "8006:8006"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - STOCK_ANALYSIS_PORT=8006
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - kafka
+    command: python -m services.stock_analysis.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  github_analysis:
+    build:
+      context: .
+      dockerfile: services/github_analysis/Dockerfile
+    ports:
+      - "8007:8007"
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GITHUB_ANALYSIS_PORT=8007
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - kafka
+    command: python -m services.github_analysis.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: services/celery_worker/Dockerfile
+    environment:
+      - SQLITE_DB_PATH=/app/data/astraflow.db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=documents
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - redis
+      - kafka
+    command: celery -A services.celery_worker.celery_app worker --loglevel=info
+
 volumes:
   redis_data:
   minio_data:

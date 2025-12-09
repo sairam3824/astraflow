@@ -29,7 +29,7 @@
                     <span>Collections</span>
                 </a>
                 <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💬</span>
+                    <span>💼</span>
                     <span>Workspace</span>
                 </a>
                 <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
@@ -49,10 +49,11 @@
             <div class="flex-1"></div>
 
             <div class="p-4 border-t border-gray-200">
-                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
                     <span>⚙️</span>
                     <span>Settings</span>
                 </a>
+                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
             </div>
         </aside>
 
@@ -187,6 +188,14 @@
             month: 'long', 
             day: 'numeric' 
         });
+        
+        // Set sidebar date
+        const dateStr = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        document.getElementById('sidebarDate').textContent = dateStr;
 
         // Load goals
         const goals = [

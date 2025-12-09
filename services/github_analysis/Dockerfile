@@ -1,9 +1,8 @@
 FROM python:3.11-slim
 
-# Install system dependencies
+# Install system dependencies including git for GitHub operations
 RUN apt-get update && apt-get install -y \
     curl \
-    tesseract-ocr \
     git \
     && rm -rf /var/lib/apt/lists/*
 
@@ -16,12 +15,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy shared libraries
 COPY libs/ ./libs/
 
-# Copy all services (celery worker may need access to multiple services)
-COPY services/ ./services/
+# Copy service code
+COPY services/github_analysis/ ./services/github_analysis/
 
 # Create directories
 RUN mkdir -p /app/data /app/logs
 
 ENV PYTHONPATH=/app
 
-CMD ["celery", "-A", "services.celery_worker.celery_app", "worker", "--loglevel=info"]
+EXPOSE 8007
+
+CMD ["python", "-m", "services.github_analysis.main"]

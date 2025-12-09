@@ -1,0 +1,85 @@
+# Docker Compose override for development
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  api_gateway:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+      - ./templates:/app/templates
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.api_gateway.main:app --host 0.0.0.0 --port 8000 --reload
+
+  ingestion:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.ingestion.main:app --host 0.0.0.0 --port 8001 --reload
+
+  embedding:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.embedding.main:app --host 0.0.0.0 --port 8002 --reload
+
+  agent_router:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.agent_router.main:app --host 0.0.0.0 --port 8003 --reload
+
+  workflow_runner:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.workflow_runner.main:app --host 0.0.0.0 --port 8004 --reload
+
+  stock_producer:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.stock_producer.main:app --host 0.0.0.0 --port 8005 --reload
+
+  stock_analysis:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.stock_analysis.main:app --host 0.0.0.0 --port 8006 --reload
+
+  github_analysis:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - WATCHFILES_FORCE_POLLING=true
+    command: python -m uvicorn services.github_analysis.main:app --host 0.0.0.0 --port 8007 --reload
+
+  celery_worker:
+    volumes:
+      - ./services:/app/services
+      - ./libs:/app/libs
+    environment:
+      - PYTHONUNBUFFERED=1
