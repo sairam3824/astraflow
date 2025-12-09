@@ -610,11 +610,13 @@ stock_ws_manager = StockWebSocketManager()
 async def websocket_stocks(websocket: WebSocket):
     """WebSocket endpoint for real-time stock data"""
     await stock_ws_manager.connect(websocket)
+    consumer = None
     
     try:
         # Start consuming from Kafka in background
         from kafka import KafkaConsumer
         from libs.utils.config import config
+        import asyncio
         
         consumer = KafkaConsumer(
             'market.ticks',
@@ -622,18 +624,27 @@ async def websocket_stocks(websocket: WebSocket):
             value_deserializer=lambda m: json.loads(m.decode('utf-8')),
             auto_offset_reset='latest',
             enable_auto_commit=True,
-            group_id='websocket-stock-consumer'
+            group_id='websocket-stock-consumer',
+            consumer_timeout_ms=1000  # Timeout to prevent blocking
         )
         
-        # Send messages to websocket
-        for message in consumer:
-            try:
-                await websocket.send_json(message.value)
-            except WebSocketDisconnect:
-                break
-            except Exception as e:
-                logger.error(f"Error sending stock data: {e}")
-                break
+        # Send messages to websocket with non-blocking polling
+        while True:
+            # Poll for messages with timeout
+            messages = consumer.poll(timeout_ms=100, max_records=10)
+            
+            if messages:
+                for topic_partition, records in messages.items():
+                    for message in records:
+                        try:
+                            await websocket.send_json(message.value)
+                        except WebSocketDisconnect:
+                            raise
+                        except Exception as e:
+                            logger.error(f"Error sending stock data: {e}")
+            
+            # Yield control to event loop
+            await asyncio.sleep(0.01)
                 
     except WebSocketDisconnect:
         stock_ws_manager.disconnect(websocket)
