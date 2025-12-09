@@ -198,8 +198,11 @@
             <div class="w-1/4 bg-gray-50 p-6 overflow-y-auto border-l border-gray-200">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-bold text-gray-900">📁 Files</h3>
-                    <span class="text-sm text-gray-500" id="filesCount">0 files</span>
+                    <button onclick="showUploadModal()" class="px-3 py-1.5 bg-purple-500 text-white text-xs rounded-lg hover:bg-purple-600">
+                        + Upload
+                    </button>
                 </div>
+                <div class="text-sm text-gray-500 mb-4" id="filesCount">0 files</div>
                 <div id="filesList" class="space-y-2">
                     <!-- Files will be loaded here -->
                 </div>
@@ -245,6 +248,51 @@
                     </button>
                     <button onclick="createCollection()" class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-pink-600">
                         Create
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Upload PDF</h2>
+                <button onclick="hideUploadModal()" class="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Select PDF File</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+                        <input type="file" id="pdfFileInput" accept=".pdf" class="hidden" onchange="handleFileSelect(event)">
+                        <button onclick="document.getElementById('pdfFileInput').click()" class="w-full">
+                            <div class="text-4xl mb-2">📄</div>
+                            <div class="text-sm text-gray-600 mb-1">Click to select PDF</div>
+                            <div class="text-xs text-gray-400">or drag and drop</div>
+                        </button>
+                    </div>
+                    <div id="selectedFileName" class="mt-2 text-sm text-gray-600"></div>
+                </div>
+
+                <div id="uploadProgress" class="hidden">
+                    <div class="mb-2 flex justify-between text-sm">
+                        <span class="text-gray-600">Uploading...</span>
+                        <span class="text-gray-600" id="uploadPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="uploadProgressBar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all" style="width: 0%"></div>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500" id="uploadStatus">Preparing upload...</div>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button onclick="hideUploadModal()" class="flex-1 px-4 py-3 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button onclick="uploadPDF()" id="uploadButton" class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Upload
                     </button>
                 </div>
             </div>
@@ -403,22 +451,22 @@
         async function loadCollectionFiles(collectionId) {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:8000/api/collections/${collectionId}/files`, {
+                const response = await fetch(`http://localhost:8080/api/collections/${collectionId}/documents`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
                 if (response.ok) {
-                    const files = await response.json();
+                    const data = await response.json();
+                    const files = data.documents.map(doc => ({
+                        id: doc.id,
+                        name: doc.filename,
+                        status: doc.status,
+                        type: doc.filename.split('.').pop(),
+                        date: new Date(doc.created_at).toLocaleDateString()
+                    }));
                     renderFilesList(files);
                 } else {
-                    // Mock data for demo
-                    const mockFiles = [
-                        { name: 'contract_001.pdf', size: '2.3 MB', type: 'pdf', date: '2024-12-01' },
-                        { name: 'agreement_v2.pdf', size: '1.8 MB', type: 'pdf', date: '2024-12-03' },
-                        { name: 'terms_conditions.txt', size: '45 KB', type: 'txt', date: '2024-12-05' },
-                        { name: 'summary.csv', size: '120 KB', type: 'csv', date: '2024-12-07' }
-                    ];
-                    renderFilesList(mockFiles);
+                    renderFilesList([]);
                 }
             } catch (error) {
                 console.error('Error loading files:', error);
@@ -431,7 +479,7 @@
             document.getElementById('filesCount').textContent = `${files.length} files`;
             
             if (files.length === 0) {
-                filesList.innerHTML = '<div class="text-sm text-gray-500 text-center py-8">No files found</div>';
+                filesList.innerHTML = '<div class="text-sm text-gray-500 text-center py-8">No files yet. Click Upload to add PDFs.</div>';
                 return;
             }
 
@@ -446,14 +494,24 @@
                 return icons[type] || '📎';
             };
 
+            const getStatusBadge = (status) => {
+                const badges = {
+                    'pending': '<span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">Pending</span>',
+                    'processing': '<span class="text-xs px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded">Processing</span>',
+                    'indexed': '<span class="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded">Indexed</span>',
+                    'failed': '<span class="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">Failed</span>'
+                };
+                return badges[status] || '';
+            };
+
             filesList.innerHTML = files.map(file => `
                 <div class="bg-white rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer border border-gray-200">
                     <div class="flex items-start space-x-3">
                         <div class="text-2xl">${getFileIcon(file.type)}</div>
                         <div class="flex-1 min-w-0">
                             <div class="text-sm font-medium text-gray-900 truncate">${file.name}</div>
-                            <div class="text-xs text-gray-500 mt-1">${file.size}</div>
                             <div class="text-xs text-gray-400 mt-1">${file.date}</div>
+                            <div class="mt-1">${getStatusBadge(file.status)}</div>
                         </div>
                     </div>
                 </div>
@@ -595,6 +653,153 @@
             
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+
+        // Upload Functions
+        let selectedFile = null;
+
+        function showUploadModal() {
+            if (!currentCollectionId) {
+                alert('Please open a collection first');
+                return;
+            }
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function hideUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            selectedFile = null;
+            document.getElementById('selectedFileName').textContent = '';
+            document.getElementById('uploadButton').disabled = true;
+            document.getElementById('uploadProgress').classList.add('hidden');
+            document.getElementById('uploadProgressBar').style.width = '0%';
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.type !== 'application/pdf') {
+                    alert('Please select a PDF file');
+                    return;
+                }
+                selectedFile = file;
+                document.getElementById('selectedFileName').textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                document.getElementById('uploadButton').disabled = false;
+            }
+        }
+
+        async function uploadPDF() {
+            if (!selectedFile || !currentCollectionId) return;
+
+            const token = localStorage.getItem('token');
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = document.getElementById('uploadProgressBar');
+            const statusText = document.getElementById('uploadStatus');
+            const uploadButton = document.getElementById('uploadButton');
+
+            try {
+                uploadButton.disabled = true;
+                progressDiv.classList.remove('hidden');
+                
+                // Step 1: Get upload URL
+                statusText.textContent = 'Getting upload URL...';
+                progressBar.style.width = '10%';
+                
+                const uploadUrlResponse = await fetch(`http://localhost:8080/api/collections/${currentCollectionId}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ filename: selectedFile.name })
+                });
+
+                if (!uploadUrlResponse.ok) {
+                    throw new Error('Failed to get upload URL');
+                }
+
+                const { upload_url, object_name } = await uploadUrlResponse.json();
+                
+                // Step 2: Upload file to MinIO
+                statusText.textContent = 'Uploading file...';
+                progressBar.style.width = '30%';
+                
+                const uploadResponse = await fetch(upload_url, {
+                    method: 'PUT',
+                    body: selectedFile,
+                    headers: {
+                        'Content-Type': 'application/pdf'
+                    }
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('Failed to upload file');
+                }
+
+                progressBar.style.width = '60%';
+                
+                // Step 3: Trigger ingestion
+                statusText.textContent = 'Starting document processing...';
+                
+                const ingestResponse = await fetch(`http://localhost:8080/api/collections/${currentCollectionId}/ingest`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ object_name })
+                });
+
+                if (!ingestResponse.ok) {
+                    throw new Error('Failed to start ingestion');
+                }
+
+                const { document_id } = await ingestResponse.json();
+                
+                progressBar.style.width = '100%';
+                statusText.textContent = 'Upload complete! Processing in background...';
+                
+                // Wait a moment then close modal and refresh
+                setTimeout(() => {
+                    hideUploadModal();
+                    loadCollectionFiles(currentCollectionId);
+                    alert('PDF uploaded successfully! It will be indexed in the background.');
+                }, 1500);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusText.textContent = 'Upload failed: ' + error.message;
+                progressBar.style.width = '0%';
+                uploadButton.disabled = false;
+                alert('Upload failed: ' + error.message);
+            }
+        }
+
+        // Auto-refresh files every 5 seconds when chat panel is open
+        let refreshInterval = null;
+        
+        const originalOpenChat = openCollectionChat;
+        openCollectionChat = function(event, collectionId, collectionName) {
+            originalOpenChat(event, collectionId, collectionName);
+            
+            // Start auto-refresh
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(() => {
+                if (currentCollectionId) {
+                    loadCollectionFiles(currentCollectionId);
+                }
+            }, 5000);
+        };
+
+        const originalCloseChat = closeChatPanel;
+        closeChatPanel = function(event) {
+            originalCloseChat(event);
+            
+            // Stop auto-refresh
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        };
     </script>
 </body>
 </html>

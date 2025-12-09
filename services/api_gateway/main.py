@@ -355,11 +355,84 @@ async def ingest_document(collection_id: str, req: IngestRequest, user_id: str =
     else:
         raise HTTPException(status_code=400, detail="Invalid object_name format")
     
+    # Update document status to processing
+    await db.conn.execute(
+        "UPDATE documents SET status = 'processing' WHERE id = ?",
+        (document_id,)
+    )
+    await db.conn.commit()
+    
     # Trigger ingestion task
     task = ingest_document_task.apply_async(args=[document_id, collection_id, req.object_name])
     
     logger.info(f"Ingestion triggered for document {document_id}")
-    return {"job_id": task.id, "status": "processing"}
+    return {"job_id": task.id, "status": "processing", "document_id": document_id}
+
+@app.get("/api/collections/{collection_id}/documents")
+async def list_documents(collection_id: str, user_id: str = Depends(get_current_user)):
+    """List all documents in a collection"""
+    # Verify ownership
+    cursor = await db.conn.execute(
+        "SELECT owner_id FROM collections WHERE id = ?", (collection_id,)
+    )
+    row = await cursor.fetchone()
+    
+    if not row or row[0] != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Get documents
+    cursor = await db.conn.execute(
+        "SELECT id, filename, status, created_at FROM documents WHERE collection_id = ? ORDER BY created_at DESC",
+        (collection_id,)
+    )
+    rows = await cursor.fetchall()
+    
+    documents = [
+        {
+            "id": row[0],
+            "filename": row[1],
+            "status": row[2],
+            "created_at": row[3]
+        }
+        for row in rows
+    ]
+    
+    return {"documents": documents, "total": len(documents)}
+
+@app.get("/api/documents/{document_id}/status")
+async def get_document_status(document_id: str, user_id: str = Depends(get_current_user)):
+    """Get document processing status"""
+    cursor = await db.conn.execute(
+        """
+        SELECT d.id, d.filename, d.status, d.created_at, c.owner_id
+        FROM documents d
+        JOIN collections c ON d.collection_id = c.id
+        WHERE d.id = ?
+        """,
+        (document_id,)
+    )
+    row = await cursor.fetchone()
+    
+    if not row:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    if row[4] != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Get chunk count
+    cursor = await db.conn.execute(
+        "SELECT COUNT(*) FROM chunks WHERE doc_id = ?",
+        (document_id,)
+    )
+    chunk_count = (await cursor.fetchone())[0]
+    
+    return {
+        "id": row[0],
+        "filename": row[1],
+        "status": row[2],
+        "created_at": row[3],
+        "chunks": chunk_count
+    }
 
 # Chat Models
 class CreateChatSessionRequest(BaseModel):
@@ -490,26 +563,44 @@ async def search_collection(
     try:
         # Query ChromaDB
         chroma_client = chromadb.HttpClient(host=config.CHROMA_HOST, port=config.CHROMA_PORT)
-        collection = chroma_client.get_collection(name=f"collection_{collection_id}")
         
-        results = collection.query(
-            query_texts=[query],
-            n_results=top_k
-        )
-        
-        # Format results
-        formatted_results = []
-        if results['documents'] and len(results['documents']) > 0:
-            for i, doc in enumerate(results['documents'][0]):
-                formatted_results.append({
-                    'text': doc,
-                    'score': 1 - results['distances'][0][i] if results['distances'] else 0,
-                    'metadata': results['metadatas'][0][i] if results['metadatas'] else {}
-                })
-        
-        # Generate AI answer using RAG
-        context = "\n\n".join([r['text'] for r in formatted_results])
-        prompt = f"""Based on the following context, answer the question.
+        try:
+            collection = chroma_client.get_collection(name=f"collection_{collection_id}")
+            
+            # Check if collection has any documents
+            count = collection.count()
+            if count == 0:
+                return {
+                    "answer": "This collection is empty. Please upload and index some documents first.",
+                    "results": [],
+                    "query": query
+                }
+            
+            results = collection.query(
+                query_texts=[query],
+                n_results=min(top_k, count)
+            )
+            
+            # Format results
+            formatted_results = []
+            if results['documents'] and len(results['documents']) > 0:
+                for i, doc in enumerate(results['documents'][0]):
+                    formatted_results.append({
+                        'text': doc,
+                        'score': 1 - results['distances'][0][i] if results['distances'] else 0,
+                        'metadata': results['metadatas'][0][i] if results['metadatas'] else {}
+                    })
+            
+            if not formatted_results:
+                return {
+                    "answer": "No relevant documents found for your query.",
+                    "results": [],
+                    "query": query
+                }
+            
+            # Generate AI answer using RAG
+            context = "\n\n".join([r['text'] for r in formatted_results])
+            prompt = f"""Based on the following context, answer the question.
 
 Context:
 {context}
@@ -517,18 +608,40 @@ Context:
 Question: {query}
 
 Answer:"""
-        
-        # Get AI model and generate answer
-        model = get_model("gpt-4")
-        answer = model.generate(prompt)
-        
-        logger.info(f"RAG search performed on collection {collection_id}")
-        
-        return {
-            "answer": answer,
-            "results": formatted_results,
-            "query": query
-        }
+            
+            # Use OpenAI directly for now
+            from openai import OpenAI
+            openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
+            
+            response = openai_client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that answers questions based on the provided context."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=500
+            )
+            
+            answer = response.choices[0].message.content
+            
+            logger.info(f"RAG search performed on collection {collection_id}")
+            
+            return {
+                "answer": answer,
+                "results": formatted_results,
+                "query": query,
+                "total_chunks": count
+            }
+            
+        except Exception as e:
+            if "does not exist" in str(e).lower():
+                return {
+                    "answer": "This collection has not been initialized yet. Please upload and index some documents first.",
+                    "results": [],
+                    "query": query
+                }
+            raise
         
     except Exception as e:
         logger.error(f"RAG search error: {e}")
