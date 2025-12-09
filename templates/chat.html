@@ -97,10 +97,12 @@
             <div class="bg-white border-t border-gray-200 p-4">
                 <div class="max-w-4xl mx-auto">
                     <div class="flex gap-2 items-center">
-                        <select id="activeModelSelect" onchange="changeModel()" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white" disabled>
+                        <select id="activeModelSelect" onchange="changeModel()" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white cursor-pointer min-w-[140px]">
                             <option value="gpt-4">GPT-4</option>
-                            <option value="gpt-3.5-turbo">GPT-3.5</option>
-                            <option value="gemini-pro">Gemini</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="gemini-pro">Gemini Pro</option>
+                            <option value="claude-3">Claude 3</option>
+                            <option value="llama-2">Llama 2</option>
                         </select>
                         <input 
                             type="text" 
@@ -108,13 +110,11 @@
                             placeholder="Type your message..." 
                             class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             onkeypress="if(event.key === 'Enter') sendMessage()"
-                            disabled
                         />
                         <button 
                             onclick="sendMessage()" 
                             id="sendButton"
                             class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            disabled
                         >
                             Send
                         </button>
@@ -135,6 +135,8 @@
                         <option value="gpt-4">GPT-4 (OpenAI)</option>
                         <option value="gpt-3.5-turbo">GPT-3.5 Turbo (OpenAI)</option>
                         <option value="gemini-pro">Gemini Pro (Google)</option>
+                        <option value="claude-3">Claude 3 (Anthropic)</option>
+                        <option value="llama-2">Llama 2 (Meta)</option>
                     </select>
                 </div>
                 <div>
@@ -213,10 +215,7 @@
                 currentSessionId = session.id;
                 currentModel = model;
                 
-                // Enable input and model selector
-                document.getElementById('messageInput').disabled = false;
-                document.getElementById('sendButton').disabled = false;
-                document.getElementById('activeModelSelect').disabled = false;
+                // Update model selector value (it's always enabled now)
                 document.getElementById('activeModelSelect').value = model;
                 
                 // Clear messages and show welcome message
