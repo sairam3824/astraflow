@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,8 @@
                 <div class="text-sm text-gray-500">Admin</div>
             </div>
 
-            <nav class="p-4 space-y-1">
+            <!-- Main Navigation -->
+            <nav class="p-4 space-y-1 border-b border-gray-200">
                 <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>🏠</span>
                     <span>Home</span>
@@ -29,8 +30,12 @@
                     <span>Collections</span>
                 </a>
                 <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💬</span>
+                    <span>💼</span>
                     <span>Workspace</span>
+                </a>
+                <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>💬</span>
+                    <span>Chat</span>
                 </a>
                 <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
                     <span>⚙️</span>
@@ -38,9 +43,34 @@
                 </a>
                 <a href="/stocks" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>📈</span>
-                    <span>Stocks</span>
+                    <span>Stock Analysis</span>
                 </a>
             </nav>
+
+            <!-- My Projects Section -->
+            <div class="flex-1 p-4">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">MY PROJECTS</div>
+                <div class="space-y-1">
+                    <a href="/collections?project=document-analysis" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        Document Analysis
+                    </a>
+                    <a href="/stocks" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        Stock Research
+                    </a>
+                    <a href="/collections?project=github" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        GitHub Docs
+                    </a>
+                </div>
+            </div>
+
+            <!-- Settings & Date -->
+            <div class="p-4 border-t border-gray-200">
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -117,6 +147,15 @@
     </div>
 
     <script>
+        // Set current date
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        document.getElementById('sidebarDate').textContent = dateStr;
+
         const nodes = [
             { id: 1, type: 'start', label: 'Ingest PDF', icon: '📄', x: 100, y: 200 },
             { id: 2, type: 'process', label: 'Vector Search', icon: '🔍', x: 300, y: 200 },

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,7 +15,8 @@
                 <div class="text-sm text-gray-500">Admin</div>
             </div>
 
-            <nav class="p-4 space-y-1">
+            <!-- Main Navigation -->
+            <nav class="p-4 space-y-1 border-b border-gray-200">
                 <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>🏠</span>
                     <span>Home</span>
@@ -29,8 +30,12 @@
                     <span>Collections</span>
                 </a>
                 <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💬</span>
+                    <span>💼</span>
                     <span>Workspace</span>
+                </a>
+                <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>💬</span>
+                    <span>Chat</span>
                 </a>
                 <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>⚙️</span>
@@ -38,9 +43,34 @@
                 </a>
                 <a href="/stocks" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>📈</span>
-                    <span>Stocks</span>
+                    <span>Stock Analysis</span>
                 </a>
             </nav>
+
+            <!-- My Projects Section -->
+            <div class="flex-1 p-4">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">MY PROJECTS</div>
+                <div class="space-y-1">
+                    <a href="/collections?project=document-analysis" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        Document Analysis
+                    </a>
+                    <a href="/stocks" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        Stock Research
+                    </a>
+                    <a href="/collections?project=github" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        GitHub Docs
+                    </a>
+                </div>
+            </div>
+
+            <!-- Settings & Date -->
+            <div class="p-4 border-t border-gray-200">
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -85,6 +115,96 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="collectionsGrid"></div>
             </div>
         </main>
+    </div>
+
+    <!-- Collection Chat Panel -->
+    <div id="chatPanel" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="closeChatPanel(event)">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-7xl h-[85vh] flex overflow-hidden" onclick="event.stopPropagation()">
+            <!-- Left: Summary -->
+            <div class="w-1/4 bg-gradient-to-br from-purple-50 to-pink-50 p-6 overflow-y-auto border-r border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">📊 Summary</h3>
+                </div>
+                <div id="collectionSummary" class="space-y-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <div class="text-sm text-gray-500 mb-1">Collection</div>
+                        <div class="font-semibold text-gray-900" id="summaryCollectionName">-</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <div class="text-sm text-gray-500 mb-1">Total Files</div>
+                        <div class="text-2xl font-bold text-purple-600" id="summaryFileCount">0</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <div class="text-sm text-gray-500 mb-2">File Types</div>
+                        <div id="summaryFileTypes" class="space-y-1 text-sm">
+                            <div class="flex justify-between"><span>📄 PDF</span><span class="font-medium">0</span></div>
+                            <div class="flex justify-between"><span>📝 TXT</span><span class="font-medium">0</span></div>
+                            <div class="flex justify-between"><span>📊 CSV</span><span class="font-medium">0</span></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <div class="text-sm text-gray-500 mb-1">Status</div>
+                        <div class="flex items-center text-green-600">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span class="font-medium">Indexed</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <div class="text-sm text-gray-500 mb-2">Quick Stats</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between"><span>Total Size</span><span class="font-medium" id="summaryTotalSize">-</span></div>
+                            <div class="flex justify-between"><span>Last Updated</span><span class="font-medium" id="summaryLastUpdated">-</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle: AI Chatbot -->
+            <div class="flex-1 flex flex-col">
+                <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold mb-1">💬 Collection Assistant</h2>
+                        <p class="text-sm text-purple-100">Ask questions about your collection</p>
+                    </div>
+                    <button onclick="closeChatPanel(event)" class="text-white hover:bg-white/20 rounded-lg p-2">✕</button>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-6 bg-gray-50" id="chatMessages">
+                    <div class="max-w-3xl mx-auto space-y-4">
+                        <div class="bg-purple-100 rounded-lg p-4 text-sm">
+                            <div class="font-medium text-purple-900 mb-1">🤖 AI Assistant</div>
+                            <div class="text-purple-800">Hello! I'm here to help you with this collection. You can ask me about the files, search for specific information, or get insights about the documents.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 p-4 bg-white">
+                    <div class="max-w-3xl mx-auto flex space-x-3">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            placeholder="Ask about this collection..." 
+                            class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            onkeypress="if(event.key === 'Enter') sendChatMessage()"
+                        >
+                        <button onclick="sendChatMessage()" class="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-pink-600">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Files List -->
+            <div class="w-1/4 bg-gray-50 p-6 overflow-y-auto border-l border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">📁 Files</h3>
+                    <span class="text-sm text-gray-500" id="filesCount">0 files</span>
+                </div>
+                <div id="filesList" class="space-y-2">
+                    <!-- Files will be loaded here -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Create Modal -->
@@ -132,6 +252,15 @@
     </div>
 
     <script>
+        // Set current date
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        document.getElementById('sidebarDate').textContent = dateStr;
+
         const mockCollections = [
             { id: 1, name: 'Legal Contracts', domain: 'Legal', documents: 45, status: 'indexed', color: 'purple' },
             { id: 2, name: 'Q3 Financials', domain: 'Finance', documents: 23, status: 'indexed', color: 'blue' },
@@ -162,7 +291,18 @@
             document.getElementById('processingCount').textContent = collections.filter(c => c.status === 'processing').length;
 
             const grid = document.getElementById('collectionsGrid');
-            grid.innerHTML = collections.map(col => `
+            
+            // Create Collection button first
+            const createButton = `
+                <button onclick="showCreateModal()" class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 hover:border-purple-400 hover:bg-purple-50 transition-all p-6 flex flex-col items-center justify-center min-h-[240px]">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-4">+</div>
+                    <div class="text-lg font-medium text-gray-900 mb-1">Create Collection</div>
+                    <div class="text-sm text-gray-500">Start a new knowledge base</div>
+                </button>
+            `;
+            
+            // Existing collections
+            const collectionsHTML = collections.map(col => `
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg hover:border-purple-300 transition-all cursor-pointer overflow-hidden">
                     <div class="h-2 bg-gradient-to-r from-${col.color}-400 to-${col.color}-600"></div>
                     <div class="p-6">
@@ -180,7 +320,7 @@
                                 <span class="font-medium text-gray-900">${col.documents || col.doc_count || 0}</span> documents
                             </div>
                             <div class="flex space-x-2">
-                                <button class="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg">💬</button>
+                                <button onclick="openCollectionChat(event, ${col.id}, '${col.name}')" class="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg">💬</button>
                                 <button class="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg">⚙️</button>
                             </div>
                         </div>
@@ -188,13 +328,7 @@
                 </div>
             `).join('');
             
-            grid.innerHTML += `
-                <button onclick="showCreateModal()" class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 hover:border-purple-400 hover:bg-purple-50 transition-all p-6 flex flex-col items-center justify-center min-h-[240px]">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-4">+</div>
-                    <div class="text-lg font-medium text-gray-900 mb-1">Create Collection</div>
-                    <div class="text-sm text-gray-500">Start a new knowledge base</div>
-                </button>
-            `;
+            grid.innerHTML = createButton + collectionsHTML;
         }
 
         function showCreateModal() {
@@ -235,6 +369,232 @@
         }
 
         loadCollections();
+
+        // Chat Panel Functions
+        let currentCollectionId = null;
+        let currentCollectionName = '';
+
+        function openCollectionChat(event, collectionId, collectionName) {
+            event.stopPropagation();
+            currentCollectionId = collectionId;
+            currentCollectionName = collectionName;
+            
+            document.getElementById('chatPanel').classList.remove('hidden');
+            document.getElementById('summaryCollectionName').textContent = collectionName;
+            
+            // Load collection data
+            loadCollectionFiles(collectionId);
+            loadCollectionSummary(collectionId);
+        }
+
+        function closeChatPanel(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('chatPanel').classList.add('hidden');
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="max-w-3xl mx-auto space-y-4">
+                    <div class="bg-purple-100 rounded-lg p-4 text-sm">
+                        <div class="font-medium text-purple-900 mb-1">🤖 AI Assistant</div>
+                        <div class="text-purple-800">Hello! I'm here to help you with this collection. You can ask me about the files, search for specific information, or get insights about the documents.</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadCollectionFiles(collectionId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8000/api/collections/${collectionId}/files`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const files = await response.json();
+                    renderFilesList(files);
+                } else {
+                    // Mock data for demo
+                    const mockFiles = [
+                        { name: 'contract_001.pdf', size: '2.3 MB', type: 'pdf', date: '2024-12-01' },
+                        { name: 'agreement_v2.pdf', size: '1.8 MB', type: 'pdf', date: '2024-12-03' },
+                        { name: 'terms_conditions.txt', size: '45 KB', type: 'txt', date: '2024-12-05' },
+                        { name: 'summary.csv', size: '120 KB', type: 'csv', date: '2024-12-07' }
+                    ];
+                    renderFilesList(mockFiles);
+                }
+            } catch (error) {
+                console.error('Error loading files:', error);
+                renderFilesList([]);
+            }
+        }
+
+        function renderFilesList(files) {
+            const filesList = document.getElementById('filesList');
+            document.getElementById('filesCount').textContent = `${files.length} files`;
+            
+            if (files.length === 0) {
+                filesList.innerHTML = '<div class="text-sm text-gray-500 text-center py-8">No files found</div>';
+                return;
+            }
+
+            const getFileIcon = (type) => {
+                const icons = {
+                    'pdf': '📄',
+                    'txt': '📝',
+                    'csv': '📊',
+                    'doc': '📃',
+                    'docx': '📃'
+                };
+                return icons[type] || '📎';
+            };
+
+            filesList.innerHTML = files.map(file => `
+                <div class="bg-white rounded-lg p-3 hover:shadow-md transition-shadow cursor-pointer border border-gray-200">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-2xl">${getFileIcon(file.type)}</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm font-medium text-gray-900 truncate">${file.name}</div>
+                            <div class="text-xs text-gray-500 mt-1">${file.size}</div>
+                            <div class="text-xs text-gray-400 mt-1">${file.date}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadCollectionSummary(collectionId) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8000/api/collections/${collectionId}/summary`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    const summary = await response.json();
+                    updateSummary(summary);
+                } else {
+                    // Mock data for demo
+                    const mockSummary = {
+                        fileCount: 45,
+                        fileTypes: { pdf: 30, txt: 10, csv: 5 },
+                        totalSize: '125 MB',
+                        lastUpdated: 'Dec 7, 2024'
+                    };
+                    updateSummary(mockSummary);
+                }
+            } catch (error) {
+                console.error('Error loading summary:', error);
+            }
+        }
+
+        function updateSummary(summary) {
+            document.getElementById('summaryFileCount').textContent = summary.fileCount || 0;
+            document.getElementById('summaryTotalSize').textContent = summary.totalSize || '-';
+            document.getElementById('summaryLastUpdated').textContent = summary.lastUpdated || '-';
+            
+            if (summary.fileTypes) {
+                document.getElementById('summaryFileTypes').innerHTML = `
+                    <div class="flex justify-between"><span>📄 PDF</span><span class="font-medium">${summary.fileTypes.pdf || 0}</span></div>
+                    <div class="flex justify-between"><span>📝 TXT</span><span class="font-medium">${summary.fileTypes.txt || 0}</span></div>
+                    <div class="flex justify-between"><span>📊 CSV</span><span class="font-medium">${summary.fileTypes.csv || 0}</span></div>
+                `;
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            const maxWidth = 'max-w-3xl mx-auto space-y-4';
+            
+            // Add user message
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = maxWidth;
+            userMessageDiv.innerHTML = `
+                <div class="flex justify-end">
+                    <div class="bg-purple-600 text-white rounded-lg p-4 text-sm max-w-md">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(userMessageDiv);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = maxWidth;
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="bg-gray-200 rounded-lg p-4 text-sm max-w-md">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+                        <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:8000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        collection_id: currentCollectionId,
+                        collection_name: currentCollectionName
+                    })
+                });
+                
+                document.getElementById('typingIndicator')?.remove();
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = maxWidth;
+                    aiMessageDiv.innerHTML = `
+                        <div class="bg-purple-100 rounded-lg p-4 text-sm max-w-md">
+                            <div class="font-medium text-purple-900 mb-1">🤖 AI Assistant</div>
+                            <div class="text-purple-800">${data.response || data.message}</div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(aiMessageDiv);
+                } else {
+                    // Mock response for demo
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = maxWidth;
+                    aiMessageDiv.innerHTML = `
+                        <div class="bg-purple-100 rounded-lg p-4 text-sm max-w-md">
+                            <div class="font-medium text-purple-900 mb-1">🤖 AI Assistant</div>
+                            <div class="text-purple-800">I understand you're asking about "${message}". Based on the ${currentCollectionName} collection, I can help you find relevant information across all the documents. Would you like me to search for specific details?</div>
+                        </div>
+                    `;
+                    messagesContainer.appendChild(aiMessageDiv);
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                document.getElementById('typingIndicator')?.remove();
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = maxWidth;
+                errorDiv.innerHTML = `
+                    <div class="bg-red-100 rounded-lg p-4 text-sm max-w-md">
+                        <div class="text-red-800">Sorry, I encountered an error. Please try again.</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(errorDiv);
+            }
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     </script>
 </body>
 </html>

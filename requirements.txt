@@ -53,6 +53,7 @@ prometheus-client>=0.21.0
 
 # HTTP Client
 httpx>=0.27.0
+aiohttp>=3.9.0
 
 # Testing
 pytest>=8.0.0

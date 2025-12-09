@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, EmailStr
 from prometheus_client import make_asgi_app
@@ -8,6 +8,9 @@ import uuid
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pathlib import Path
+import json
+import asyncio
+import httpx
 
 from .database import db
 from .auth import hash_password, verify_password, create_access_token, get_current_user
@@ -120,70 +123,70 @@ async def health():
 async def home():
     html_file = TEMPLATES_DIR / "index.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>AstraFlow</h1>")
 
 @app.get("/login", response_class=HTMLResponse)
 async def login_page():
     html_file = TEMPLATES_DIR / "login.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Login</h1>")
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_page():
     html_file = TEMPLATES_DIR / "dashboard.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Dashboard</h1>")
 
 @app.get("/collections", response_class=HTMLResponse)
 async def collections_page():
     html_file = TEMPLATES_DIR / "collections.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Collections</h1>")
 
 @app.get("/workspace", response_class=HTMLResponse)
 async def workspace_page():
     html_file = TEMPLATES_DIR / "workspace.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Workspace</h1>")
 
 @app.get("/workflows", response_class=HTMLResponse)
 async def workflows_page():
     html_file = TEMPLATES_DIR / "workflows.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Workflows</h1>")
 
 @app.get("/stocks", response_class=HTMLResponse)
 async def stocks_page():
     html_file = TEMPLATES_DIR / "stocks.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Stocks</h1>")
 
 @app.get("/settings", response_class=HTMLResponse)
 async def settings_page():
     html_file = TEMPLATES_DIR / "settings.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Settings</h1>")
 
 @app.get("/rag", response_class=HTMLResponse)
 async def rag_page():
     html_file = TEMPLATES_DIR / "rag.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>RAG Search</h1>")
 
 @app.get("/chat", response_class=HTMLResponse)
 async def chat_page():
     html_file = TEMPLATES_DIR / "chat.html"
     if html_file.exists():
-        return HTMLResponse(content=html_file.read_text())
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Chat</h1>")
 
 # Collection Models
@@ -439,6 +442,30 @@ async def send_message(session_id: str, req: SendMessageRequest, user_id: str = 
         created_at=msg_row[5]
     )
 
+class UpdateModelRequest(BaseModel):
+    model: str
+
+@app.patch("/api/chat/sessions/{session_id}/model")
+async def update_chat_model(session_id: str, req: UpdateModelRequest, user_id: str = Depends(get_current_user)):
+    # Verify session ownership
+    cursor = await db.conn.execute(
+        "SELECT user_id FROM chat_sessions WHERE id = ?", (session_id,)
+    )
+    row = await cursor.fetchone()
+    
+    if not row or row[0] != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Update model
+    await db.conn.execute(
+        "UPDATE chat_sessions SET model = ? WHERE id = ?",
+        (req.model, session_id)
+    )
+    await db.conn.commit()
+    
+    logger.info(f"Chat session {session_id} model updated to {req.model}")
+    return {"status": "updated", "model": req.model}
+
 # RAG Search Endpoint
 @app.get("/api/collections/{collection_id}/search")
 async def search_collection(
@@ -506,6 +533,116 @@ Answer:"""
     except Exception as e:
         logger.error(f"RAG search error: {e}")
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+# Stock API Endpoints
+@app.get("/api/stocks/quote/{symbol}")
+async def get_stock_quote(symbol: str):
+    """Get real-time stock quote from stock producer service"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"http://localhost:8085/quote/{symbol}")
+            if response.status_code == 200:
+                return response.json()
+            else:
+                raise HTTPException(status_code=response.status_code, detail="Failed to fetch quote")
+    except Exception as e:
+        logger.error(f"Error fetching stock quote: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/stocks/start-stream")
+async def start_stock_stream():
+    """Start streaming stock data from Alpha Vantage"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post("http://localhost:8085/start-stream")
+            return response.json()
+    except Exception as e:
+        logger.error(f"Error starting stock stream: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/stocks/stop-stream")
+async def stop_stock_stream():
+    """Stop streaming stock data"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post("http://localhost:8085/stop-stream")
+            return response.json()
+    except Exception as e:
+        logger.error(f"Error stopping stock stream: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/stocks/stream-status")
+async def get_stream_status():
+    """Get streaming status"""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get("http://localhost:8085/stream-status")
+            return response.json()
+    except Exception as e:
+        logger.error(f"Error getting stream status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# WebSocket for real-time stock updates
+class StockWebSocketManager:
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+        self.kafka_consumer = None
+        
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        logger.info(f"WebSocket connected. Total connections: {len(self.active_connections)}")
+        
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+        logger.info(f"WebSocket disconnected. Total connections: {len(self.active_connections)}")
+        
+    async def broadcast(self, message: dict):
+        for connection in self.active_connections:
+            try:
+                await connection.send_json(message)
+            except Exception as e:
+                logger.error(f"Error broadcasting to websocket: {e}")
+
+stock_ws_manager = StockWebSocketManager()
+
+@app.websocket("/ws/stocks")
+async def websocket_stocks(websocket: WebSocket):
+    """WebSocket endpoint for real-time stock data"""
+    await stock_ws_manager.connect(websocket)
+    
+    try:
+        # Start consuming from Kafka in background
+        from kafka import KafkaConsumer
+        from libs.utils.config import config
+        
+        consumer = KafkaConsumer(
+            'market.ticks',
+            bootstrap_servers=config.KAFKA_BOOTSTRAP_SERVERS,
+            value_deserializer=lambda m: json.loads(m.decode('utf-8')),
+            auto_offset_reset='latest',
+            enable_auto_commit=True,
+            group_id='websocket-stock-consumer'
+        )
+        
+        # Send messages to websocket
+        for message in consumer:
+            try:
+                await websocket.send_json(message.value)
+            except WebSocketDisconnect:
+                break
+            except Exception as e:
+                logger.error(f"Error sending stock data: {e}")
+                break
+                
+    except WebSocketDisconnect:
+        stock_ws_manager.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        stock_ws_manager.disconnect(websocket)
+    finally:
+        if consumer:
+            consumer.close()
 
 if __name__ == "__main__":
     import uvicorn

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,54 +10,67 @@
     <div class="flex h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <!-- User Section -->
             <div class="p-4 border-b border-gray-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
-                        U
-                    </div>
-                    <div>
-                        <div class="font-semibold text-gray-900">User</div>
-                        <div class="text-xs text-gray-500">Admin</div>
-                    </div>
-                </div>
+                <div class="font-semibold text-gray-900 mb-1" id="userName">User</div>
+                <div class="text-sm text-gray-500">Admin</div>
             </div>
 
-            <nav class="flex-1 p-4 space-y-1">
-                <a href="/" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
+            <!-- Main Navigation -->
+            <nav class="p-4 space-y-1 border-b border-gray-200">
+                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>🏠</span>
                     <span>Home</span>
                 </a>
-                <a href="/collections" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
-                    <span>📋</span>
+                <a href="/dashboard" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/collections" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>📚</span>
                     <span>Collections</span>
                 </a>
-                <a href="/rag" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
-                    <span>🔍</span>
-                    <span>RAG Search</span>
+                <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                    <span>💼</span>
+                    <span>Workspace</span>
                 </a>
-                <a href="/chat" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-gray-100 text-gray-900 font-medium">
+                <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-900 text-sm">
                     <span>💬</span>
                     <span>Chat</span>
                 </a>
-                <a href="/workflows" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
+                <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>⚙️</span>
                     <span>Workflows</span>
                 </a>
-                <a href="/stocks" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
+                <a href="/stocks" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
                     <span>📈</span>
                     <span>Stock Analysis</span>
                 </a>
-                <a href="/github" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50">
-                    <span>🐙</span>
-                    <span>GitHub Analysis</span>
-                </a>
             </nav>
 
+            <!-- My Projects Section -->
+            <div class="flex-1 p-4">
+                <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">MY PROJECTS</div>
+                <div class="space-y-1">
+                    <a href="/collections?project=document-analysis" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        Document Analysis
+                    </a>
+                    <a href="/stocks" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        Stock Research
+                    </a>
+                    <a href="/collections?project=github" class="block px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
+                        GitHub Docs
+                    </a>
+                </div>
+            </div>
+
+            <!-- Settings & Date -->
             <div class="p-4 border-t border-gray-200">
-                <button onclick="logout()" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 w-full">
-                    <span>🚪</span>
-                    <span>Logout</span>
-                </button>
+                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
+                    <span>⚙️</span>
+                    <span>Settings</span>
+                </a>
+                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
             </div>
         </aside>
 
@@ -78,16 +91,17 @@
 
             <!-- Chat Messages -->
             <div id="chatMessages" class="flex-1 overflow-y-auto p-6 space-y-4">
-                <div class="text-center py-12 text-gray-400">
-                    <div class="text-5xl mb-4">💬</div>
-                    <p>Start a new chat to begin</p>
-                </div>
             </div>
 
             <!-- Input Area -->
             <div class="bg-white border-t border-gray-200 p-4">
                 <div class="max-w-4xl mx-auto">
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 items-center">
+                        <select id="activeModelSelect" onchange="changeModel()" class="px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white" disabled>
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5</option>
+                            <option value="gemini-pro">Gemini</option>
+                        </select>
                         <input 
                             type="text" 
                             id="messageInput" 
@@ -143,7 +157,17 @@
     </div>
 
     <script>
+        // Set current date
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString('en-US', { 
+            weekday: 'short', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+        document.getElementById('sidebarDate').textContent = dateStr;
+
         let currentSessionId = null;
+        let currentModel = null;
         let collections = [];
 
         async function loadCollections() {
@@ -187,17 +211,20 @@
 
                 const session = await response.json();
                 currentSessionId = session.id;
+                currentModel = model;
                 
-                // Enable input
+                // Enable input and model selector
                 document.getElementById('messageInput').disabled = false;
                 document.getElementById('sendButton').disabled = false;
+                document.getElementById('activeModelSelect').disabled = false;
+                document.getElementById('activeModelSelect').value = model;
                 
-                // Clear messages
-                document.getElementById('chatMessages').innerHTML = `
-                    <div class="text-center py-4 text-sm text-gray-500">
-                        Chat started with ${model}${collectionId ? ' (with document context)' : ''}
-                    </div>
-                `;
+                // Clear messages and show welcome message
+                document.getElementById('chatMessages').innerHTML = '';
+                
+                // Get user name from the page
+                const userName = document.getElementById('userName').textContent || 'there';
+                addMessageToUI('assistant', `Hi, ${userName}! How can I help you today?`);
                 
                 hideNewChatModal();
                 document.getElementById('messageInput').focus();
@@ -298,13 +325,48 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        function logout() {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
+        async function changeModel() {
+            if (!currentSessionId) return;
+            
+            const newModel = document.getElementById('activeModelSelect').value;
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:8000/api/chat/sessions/${currentSessionId}/model`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ model: newModel })
+                });
+
+                if (response.ok) {
+                    currentModel = newModel;
+                    addMessageToUI('system', `Model changed to ${newModel}`);
+                    logger.info(`Model changed to ${newModel}`);
+                } else {
+                    alert('Failed to change model');
+                    // Revert dropdown
+                    document.getElementById('activeModelSelect').value = currentModel;
+                }
+            } catch (error) {
+                console.error('Error changing model:', error);
+                alert('Error changing model');
+                // Revert dropdown
+                document.getElementById('activeModelSelect').value = currentModel;
+            }
         }
 
-        // Load collections on page load
+        // Show welcome message on page load
+        function showWelcomeMessage() {
+            const userName = document.getElementById('userName').textContent || 'there';
+            addMessageToUI('assistant', `Hi, ${userName}! How can I help you today?`);
+        }
+
+        // Load collections and show welcome message on page load
         loadCollections();
+        showWelcomeMessage();
     </script>
 </body>
 </html>
