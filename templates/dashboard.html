@@ -94,37 +94,11 @@
                                 </div>
                             </div>
 
-                            <div class="mb-4">
-                                <div class="flex items-center space-x-2 mb-3">
-                                    <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">HUMCOIKERS</span>
-                                    <span class="text-sm text-gray-500">• 2 tasks</span>
-                                </div>
-
-                                <div class="space-y-2 ml-6">
-                                    <div class="flex items-center justify-between py-2 hover:bg-gray-50 rounded-lg px-2">
-                                        <div class="flex items-center space-x-3 flex-1">
-                                            <input type="checkbox" class="w-4 h-4 rounded border-gray-300">
-                                            <span class="text-gray-900">One-on-One Meeting</span>
-                                        </div>
-                                        <div class="flex items-center space-x-3">
-                                            <span class="px-2 py-1 text-xs font-medium rounded bg-red-100 text-red-700">high</span>
-                                            <span class="text-sm text-red-600">Today</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center justify-between py-2 hover:bg-gray-50 rounded-lg px-2">
-                                        <div class="flex items-center space-x-3 flex-1">
-                                            <input type="checkbox" class="w-4 h-4 rounded border-gray-300">
-                                            <span class="text-gray-900">Send a summary email to stakeholders</span>
-                                        </div>
-                                        <div class="flex items-center space-x-3">
-                                            <span class="px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-700">low</span>
-                                            <span class="text-sm text-gray-600">3 days left</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="mb-4" id="tasksContainer">
+                                <!-- Tasks will be loaded dynamically -->
                             </div>
 
-                            <button class="text-sm text-gray-500 hover:text-gray-700 ml-6">+ Add task</button>
+                            <button onclick="showAddTaskModal()" class="text-sm text-gray-500 hover:text-gray-700 ml-6">+ Add task</button>
                         </div>
 
                         <!-- My Goals -->
@@ -188,13 +162,257 @@
         </main>
     </div>
 
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Add New Task</h3>
+                    <button onclick="hideAddTaskModal()" class="text-gray-400 hover:text-gray-600">
+                        <span class="text-xl">&times;</span>
+                    </button>
+                </div>
+                
+                <form id="addTaskForm" onsubmit="addTask(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" id="taskTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-gray-400">(optional)</span></label>
+                            <textarea id="taskDescription" rows="3" placeholder="Add a description for your task..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority <span class="text-gray-400">(optional)</span></label>
+                                <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Due Date <span class="text-gray-400">(optional)</span></label>
+                                <input type="date" id="taskDueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Project <span class="text-gray-400">(optional)</span></label>
+                            <input type="text" id="taskProject" placeholder="e.g., HUMCOIKERS" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="hideAddTaskModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Global variables
+        let tasks = [];
+
         // Logout function
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('token');
                 window.location.href = '/login';
             }
+        }
+
+        // Task management functions
+        function showAddTaskModal() {
+            document.getElementById('addTaskModal').classList.remove('hidden');
+        }
+
+        function hideAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('hidden');
+            document.getElementById('addTaskForm').reset();
+        }
+
+        async function addTask(event) {
+            event.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            const title = document.getElementById('taskTitle').value.trim();
+            if (!title) {
+                alert('Please enter a task title');
+                return;
+            }
+
+            const taskData = {
+                title: title,
+                description: document.getElementById('taskDescription').value.trim() || null,
+                priority: document.getElementById('taskPriority').value,
+                due_date: document.getElementById('taskDueDate').value || null,
+                project: document.getElementById('taskProject').value.trim() || null
+            };
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(taskData)
+                });
+
+                if (response.ok) {
+                    hideAddTaskModal();
+                    await loadTasks();
+                } else {
+                    const error = await response.json();
+                    alert('Error creating task: ' + (error.detail || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error creating task:', error);
+                alert('Error creating task. Please try again.');
+            }
+        }
+
+        async function loadTasks() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    tasks = await response.json();
+                    renderTasks();
+                } else if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+
+        async function toggleTaskStatus(taskId, currentStatus) {
+            const token = localStorage.getItem('token');
+            const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+
+            try {
+                const response = await fetch(`/api/tasks/${taskId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (response.ok) {
+                    await loadTasks();
+                }
+            } catch (error) {
+                console.error('Error updating task:', error);
+            }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasksContainer');
+            
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <p>No tasks yet. Click "Add task" to create your first task.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group tasks by project
+            const tasksByProject = {};
+            tasks.forEach(task => {
+                const project = task.project || 'Personal';
+                if (!tasksByProject[project]) {
+                    tasksByProject[project] = [];
+                }
+                tasksByProject[project].push(task);
+            });
+
+            let html = '';
+            Object.entries(tasksByProject).forEach(([project, projectTasks]) => {
+                const pendingTasks = projectTasks.filter(t => t.status !== 'completed');
+                
+                html += `
+                    <div class="mb-4">
+                        <div class="flex items-center space-x-2 mb-3">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">${project}</span>
+                            <span class="text-sm text-gray-500">• ${pendingTasks.length} tasks</span>
+                        </div>
+                        <div class="space-y-2 ml-6">
+                `;
+
+                projectTasks.forEach(task => {
+                    const priorityColors = {
+                        high: 'bg-red-100 text-red-700',
+                        medium: 'bg-yellow-100 text-yellow-700',
+                        low: 'bg-gray-100 text-gray-700'
+                    };
+
+                    const dueDateText = task.due_date ? formatDueDate(task.due_date) : '';
+                    const isCompleted = task.status === 'completed';
+
+                    html += `
+                        <div class="flex items-center justify-between py-2 hover:bg-gray-50 rounded-lg px-2">
+                            <div class="flex items-center space-x-3 flex-1">
+                                <input type="checkbox" ${isCompleted ? 'checked' : ''} 
+                                       onchange="toggleTaskStatus('${task.id}', '${task.status}')"
+                                       class="w-4 h-4 rounded border-gray-300">
+                                <span class="text-gray-900 ${isCompleted ? 'line-through text-gray-500' : ''}">${task.title}</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="px-2 py-1 text-xs font-medium rounded ${priorityColors[task.priority]}">${task.priority}</span>
+                                ${dueDateText ? `<span class="text-sm text-gray-600">${dueDateText}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function formatDueDate(dateString) {
+            const dueDate = new Date(dateString);
+            const today = new Date();
+            const diffTime = dueDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Tomorrow';
+            if (diffDays === -1) return 'Yesterday';
+            if (diffDays > 0) return `${diffDays} days left`;
+            return `${Math.abs(diffDays)} days overdue`;
         }
 
         // Set current date
@@ -281,6 +499,9 @@
                 </div>
             `;
         }
+
+        // Load tasks on page load
+        loadTasks();
     </script>
 </body>
 </html>
