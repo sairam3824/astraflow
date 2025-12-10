@@ -10,7 +10,7 @@
 - ✅ **Workflow Runner** - http://localhost:8004 (HEALTHY)
 - ✅ **Stock Producer** - http://localhost:8005 (HEALTHY)
 - ✅ **Stock Analysis** - http://localhost:8006 (HEALTHY)
-- ✅ **GitHub Analysis** - http://localhost:8007 (HEALTHY)
+- ✅ **GitHub Analysis** - http://localhost:8007 (HEALTHY) - **NEW: AI-Powered Docs Generator**
 - ✅ **Celery Worker** - Background tasks (RUNNING)
 
 ### Infrastructure Services (7)
@@ -33,6 +33,7 @@
 | Service | URL | Credentials |
 |---------|-----|-------------|
 | **Frontend** | http://localhost:8080 | - |
+| **GitHub Docs Generator** | http://localhost:8080/github-docs | - |
 | **Grafana** | http://localhost:3001 | admin/admin |
 | **MinIO Console** | http://localhost:9001 | minioadmin/minioadmin |
 | **Prometheus** | http://localhost:9090 | - |
@@ -49,6 +50,20 @@ Each service now has its own Dockerfile:
 - `services/stock_analysis/Dockerfile`
 - `services/github_analysis/Dockerfile`
 - `services/celery_worker/Dockerfile`
+
+## 🚀 New Feature: GitHub Documentation Generator
+
+Generate professional README and LICENSE files for any GitHub repository using AI!
+
+**Features:**
+- AI-powered README generation using Gemini
+- 5 license types: MIT, Apache 2.0, GPL 3.0, BSD 3-Clause, Unlicense
+- Automatic repository analysis
+- Beautiful web interface
+
+**Access:** http://localhost:8080/github-docs
+
+See `GITHUB_DOCS_GENERATOR.md` for detailed documentation.
 
 ## ✅ Ready to Use
 

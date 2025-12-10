@@ -191,6 +191,13 @@ async def chat_page():
         return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
     return HTMLResponse(content="<h1>Chat</h1>")
 
+@app.get("/github-docs", response_class=HTMLResponse)
+async def github_docs_page():
+    html_file = TEMPLATES_DIR / "github_docs.html"
+    if html_file.exists():
+        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
+    return HTMLResponse(content="<h1>GitHub Documentation Generator</h1>")
+
 # Collection Models
 class CreateCollectionRequest(BaseModel):
     name: str

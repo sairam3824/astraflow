@@ -48,6 +48,6 @@ class Config:
     WORKFLOW_RUNNER_PORT = int(os.getenv("WORKFLOW_RUNNER_PORT", "8004"))
     STOCK_PRODUCER_PORT = int(os.getenv("STOCK_PRODUCER_PORT", "8005"))
     STOCK_ANALYSIS_PORT = int(os.getenv("STOCK_ANALYSIS_PORT", "8006"))
-    GITHUB_ANALYSIS_PORT = int(os.getenv("GITHUB_ANALYSIS_PORT", "8007"))
+    GITHUB_ANALYSIS_PORT = int(os.getenv("GITHUB_ANALYSIS_PORT", "8087"))
 
 config = Config()
