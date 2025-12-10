@@ -757,6 +757,163 @@ async def get_stream_status():
         logger.error(f"Error getting stream status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Task Models
+class CreateTaskRequest(BaseModel):
+    title: str
+    description: Optional[str] = None
+    priority: Optional[str] = "medium"
+    due_date: Optional[str] = None
+    project: Optional[str] = None
+
+class UpdateTaskRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    priority: Optional[str] = None
+    status: Optional[str] = None
+    due_date: Optional[str] = None
+    project: Optional[str] = None
+
+class TaskResponse(BaseModel):
+    id: str
+    title: str
+    description: Optional[str]
+    priority: str
+    status: str
+    due_date: Optional[str]
+    project: Optional[str]
+    created_at: str
+    updated_at: str
+
+# Task API Endpoints
+@app.post("/api/tasks", response_model=TaskResponse)
+async def create_task(req: CreateTaskRequest, user_id: str = Depends(get_current_user)):
+    task_id = str(uuid.uuid4())
+    
+    await db.conn.execute(
+        """INSERT INTO tasks (id, user_id, title, description, priority, due_date, project) 
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        (task_id, user_id, req.title, req.description, req.priority, req.due_date, req.project)
+    )
+    await db.conn.commit()
+    
+    cursor = await db.conn.execute(
+        "SELECT * FROM tasks WHERE id = ?", (task_id,)
+    )
+    row = await cursor.fetchone()
+    
+    logger.info(f"Task created: {task_id}")
+    return TaskResponse(
+        id=row[0],
+        title=row[2],
+        description=row[3],
+        priority=row[4],
+        status=row[5],
+        due_date=row[6],
+        project=row[7],
+        created_at=row[8],
+        updated_at=row[9]
+    )
+
+@app.get("/api/tasks")
+async def list_tasks(user_id: str = Depends(get_current_user)):
+    cursor = await db.conn.execute(
+        "SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC", (user_id,)
+    )
+    rows = await cursor.fetchall()
+    
+    return [
+        TaskResponse(
+            id=row[0],
+            title=row[2],
+            description=row[3],
+            priority=row[4],
+            status=row[5],
+            due_date=row[6],
+            project=row[7],
+            created_at=row[8],
+            updated_at=row[9]
+        )
+        for row in rows
+    ]
+
+@app.patch("/api/tasks/{task_id}", response_model=TaskResponse)
+async def update_task(task_id: str, req: UpdateTaskRequest, user_id: str = Depends(get_current_user)):
+    # Verify task ownership
+    cursor = await db.conn.execute(
+        "SELECT user_id FROM tasks WHERE id = ?", (task_id,)
+    )
+    row = await cursor.fetchone()
+    
+    if not row or row[0] != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    # Build update query dynamically
+    updates = []
+    values = []
+    
+    if req.title is not None:
+        updates.append("title = ?")
+        values.append(req.title)
+    if req.description is not None:
+        updates.append("description = ?")
+        values.append(req.description)
+    if req.priority is not None:
+        updates.append("priority = ?")
+        values.append(req.priority)
+    if req.status is not None:
+        updates.append("status = ?")
+        values.append(req.status)
+    if req.due_date is not None:
+        updates.append("due_date = ?")
+        values.append(req.due_date)
+    if req.project is not None:
+        updates.append("project = ?")
+        values.append(req.project)
+    
+    if updates:
+        updates.append("updated_at = CURRENT_TIMESTAMP")
+        values.append(task_id)
+        
+        query = f"UPDATE tasks SET {', '.join(updates)} WHERE id = ?"
+        await db.conn.execute(query, values)
+        await db.conn.commit()
+    
+    # Return updated task
+    cursor = await db.conn.execute(
+        "SELECT * FROM tasks WHERE id = ?", (task_id,)
+    )
+    row = await cursor.fetchone()
+    
+    logger.info(f"Task updated: {task_id}")
+    return TaskResponse(
+        id=row[0],
+        title=row[2],
+        description=row[3],
+        priority=row[4],
+        status=row[5],
+        due_date=row[6],
+        project=row[7],
+        created_at=row[8],
+        updated_at=row[9]
+    )
+
+@app.delete("/api/tasks/{task_id}")
+async def delete_task(task_id: str, user_id: str = Depends(get_current_user)):
+    # Verify task ownership
+    cursor = await db.conn.execute(
+        "SELECT user_id FROM tasks WHERE id = ?", (task_id,)
+    )
+    row = await cursor.fetchone()
+    
+    if not row or row[0] != user_id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    await db.conn.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+    await db.conn.commit()
+    
+    logger.info(f"Task deleted: {task_id}")
+    return {"status": "deleted"}
+
 # WebSocket for real-time stock updates
 class StockWebSocketManager:
     def __init__(self):
