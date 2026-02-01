@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,144 +8,221 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #334155;
+            border-radius: 20px;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+
+<body class="bg-slate-900 text-slate-100 overflow-hidden">
+    <!-- Background Decor -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 opacity-20 pointer-events-none">
+        <div class="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500/20 rounded-full blur-[120px]">
+        </div>
+    </div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-            <div class="p-4 border-b border-gray-200">
-                <div class="font-semibold text-gray-900 mb-1">User</div>
-                <div class="text-sm text-gray-500">Admin</div>
+        <aside class="w-72 bg-slate-950 text-white flex flex-col shadow-2xl z-20 shrink-0 border-r border-slate-800">
+            <!-- User Section -->
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-lg font-bold shadow-lg shadow-indigo-500/30">
+                        AF</div>
+                    <span class="text-xl font-bold tracking-tight">AstraFlow</span>
+                </div>
+                <div class="bg-slate-800/50 rounded-xl p-3 flex items-center space-x-3 border border-slate-700/50">
+                    <div
+                        class="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center text-xs font-bold">
+                        U</div>
+                    <div>
+                        <div class="font-medium text-sm text-slate-200" id="userName">User</div>
+                        <div class="text-xs text-slate-500">Admin Workspace</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Main Navigation -->
-            <nav class="p-4 space-y-1 border-b border-gray-200">
-                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>🏠</span>
-                    <span>Home</span>
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">Menu</div>
+
+                <a href="/"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">🏠</span>
+                    <span class="font-medium">Home</span>
                 </a>
-                <a href="/dashboard" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>📊</span>
-                    <span>Dashboard</span>
+                <a href="/dashboard"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">📊</span>
+                    <span class="font-medium">Dashboard</span>
                 </a>
-                <a href="/collections" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>📚</span>
-                    <span>Collections</span>
+                <a href="/collections"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">📚</span>
+                    <span class="font-medium">Collections</span>
                 </a>
-                <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💼</span>
-                    <span>Workspace</span>
+                <a href="/workspace"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">💼</span>
+                    <span class="font-medium">Workspace</span>
                 </a>
-                <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💭</span>
-                    <span>Chat</span>
+                <a href="/chat"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">💭</span>
+                    <span class="font-medium">Chat</span>
                 </a>
-                <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>⚙️</span>
-                    <span>Workflows</span>
+                <a href="/workflows"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">⚙️</span>
+                    <span class="font-medium">Workflows</span>
                 </a>
-                <a href="/stocks" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
-                    <span>📈</span>
-                    <span>Stocks</span>
+                <a href="/stocks"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-900/20 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">📈</span>
+                    <span class="font-medium">Stocks</span>
                 </a>
-                <a href="/github-docs" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>🚀</span>
-                    <span>GitHub Docs</span>
+                <a href="/github-docs"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">🚀</span>
+                    <span class="font-medium">GitHub Docs</span>
                 </a>
             </nav>
 
-            <div class="flex-1"></div>
-
-            <!-- Settings & Date -->
-            <div class="p-4 border-t border-gray-200">
-                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
-                    <span>⚙️</span>
-                    <span>Settings</span>
-                </a>
-                <button onclick="logout()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm mb-2">
+            <div class="px-6 py-4">
+                <button onclick="logout()"
+                    class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-500 hover:bg-red-500/10 hover:text-red-400 text-sm transition-colors">
                     <span>🚪</span>
                     <span>Logout</span>
                 </button>
-                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
+                <div class="text-xs text-slate-600 mt-2 font-medium tracking-wide text-center" id="sidebarDate"></div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto bg-gray-50">
-            <div class="p-8">
+        <main class="flex-1 overflow-y-auto custom-scrollbar relative z-10">
+            <div class="p-8 max-w-[1600px] mx-auto">
                 <!-- Header -->
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 mb-1">Market Stream</h1>
-                        <p class="text-sm text-gray-500">Real-time stock data from Kafka</p>
+                        <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Market Stream</h1>
+                        <p class="text-slate-400">Real-time low latency feed via Kafka</p>
                     </div>
-                    
-                    <div class="flex items-center space-x-3">
-                        <select id="symbolSelect" class="px-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
-                            <option value="AAPL">AAPL - Apple Inc.</option>
-                            <option value="GOOGL">GOOGL - Alphabet Inc.</option>
-                            <option value="MSFT">MSFT - Microsoft Corp.</option>
-                            <option value="TSLA">TSLA - Tesla Inc.</option>
-                            <option value="AMZN">AMZN - Amazon.com Inc.</option>
-                        </select>
-                        
-                        <span class="flex items-center text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                            Live
+
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <select id="symbolSelect"
+                                class="pl-4 pr-10 py-2.5 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold appearance-none cursor-pointer hover:bg-slate-750 transition-colors">
+                                <option value="AAPL">AAPL - Apple Inc.</option>
+                                <option value="GOOGL">GOOGL - Alphabet Inc.</option>
+                                <option value="MSFT">MSFT - Microsoft Corp.</option>
+                                <option value="TSLA">TSLA - Tesla Inc.</option>
+                                <option value="AMZN">AMZN - Amazon.com Inc.</option>
+                            </select>
+                            <div class="absolute right-3 top-3 pointer-events-none text-slate-400 text-xs">▼</div>
+                        </div>
+
+                        <span
+                            class="flex items-center text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-3 py-2 rounded-xl">
+                            <span
+                                class="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.5)]"></span>
+                            Live Feed
                         </span>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
                     <!-- Main Chart -->
-                    <div class="lg:col-span-3 bg-gray-900 rounded-xl shadow-lg border border-gray-800 overflow-hidden">
+                    <div
+                        class="lg:col-span-3 bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-800 overflow-hidden">
                         <!-- Chart Header -->
-                        <div class="p-6 border-b border-gray-800">
+                        <div class="p-6 border-b border-slate-800 bg-slate-900/50">
                             <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h2 class="text-xl font-bold text-white" id="chartSymbol">AAPL</h2>
-                                    <div class="flex items-center space-x-3 mt-2">
-                                        <span class="text-3xl font-bold text-white" id="currentPrice">$178.23</span>
-                                        <span class="text-sm font-medium" id="priceChange">+2.34 (+1.33%)</span>
+                                    <h2 class="text-2xl font-bold text-white tracking-tight flex items-baseline gap-3">
+                                        <span id="chartSymbol">AAPL</span>
+                                        <span class="text-4xl font-bold text-white" id="currentPrice">$178.23</span>
+                                    </h2>
+                                    <div class="flex items-center space-x-3 mt-1">
+                                        <span class="text-sm font-bold bg-slate-800 px-2 py-0.5 rounded-lg"
+                                            id="priceChange">+2.34 (+1.33%)</span>
+                                        <span class="text-xs text-slate-500 mono-font" id="lastUpdate">Last updated:
+                                            --</span>
                                     </div>
-                                    <div class="text-xs text-gray-400 mt-1" id="lastUpdate">Last updated: --</div>
                                 </div>
-                                
-                                <div class="flex space-x-1">
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">1D</button>
-                                    <button class="px-3 py-1.5 text-xs bg-blue-600 text-white rounded transition">5D</button>
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">1M</button>
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">6M</button>
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">YTD</button>
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">1Y</button>
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">5Y</button>
-                                    <button class="px-3 py-1.5 text-xs text-gray-400 hover:bg-gray-800 rounded transition">Max</button>
+
+                                <div class="flex bg-slate-800 p-1 rounded-xl space-x-1">
+                                    <button
+                                        class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition">1D</button>
+                                    <button
+                                        class="px-3 py-1.5 text-xs font-bold bg-emerald-600 text-white rounded-lg shadow-sm">5D</button>
+                                    <button
+                                        class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition">1M</button>
+                                    <button
+                                        class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition">YTD</button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Chart Canvas -->
-                        <div class="p-6" style="height: 400px;">
-                            <canvas id="priceChart"></canvas>
+                        <div class="p-6 relative">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none">
+                            </div>
+                            <div style="height: 400px;">
+                                <canvas id="priceChart"></canvas>
+                            </div>
                         </div>
 
                         <!-- Stats Row -->
-                        <div class="grid grid-cols-4 gap-4 p-6 border-t border-gray-800">
-                            <div>
-                                <div class="text-xs text-gray-400 mb-1">Open</div>
-                                <div class="text-sm font-semibold text-white" id="openPrice">$178.54</div>
+                        <div class="grid grid-cols-4 gap-4 p-6 border-t border-slate-800 bg-slate-900/30">
+                            <div class="text-center md:text-left">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Open
+                                </div>
+                                <div class="text-lg font-bold text-slate-200 mono-font" id="openPrice">$178.54</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-gray-400 mb-1">High</div>
-                                <div class="text-sm font-semibold text-white" id="highPrice">$181.23</div>
+                            <div class="text-center md:text-left">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">High
+                                </div>
+                                <div class="text-lg font-bold text-slate-200 mono-font" id="highPrice">$181.23</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-gray-400 mb-1">Low</div>
-                                <div class="text-sm font-semibold text-white" id="lowPrice">$176.45</div>
+                            <div class="text-center md:text-left">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Low
+                                </div>
+                                <div class="text-lg font-bold text-slate-200 mono-font" id="lowPrice">$176.45</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-gray-400 mb-1">Volume</div>
-                                <div class="text-sm font-semibold text-white" id="volumeValue">52.3M</div>
+                            <div class="text-center md:text-left">
+                                <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Volume
+                                </div>
+                                <div class="text-lg font-bold text-slate-200 mono-font" id="volumeValue">52.3M</div>
                             </div>
                         </div>
                     </div>
@@ -152,75 +230,97 @@
                     <!-- Side Panel -->
                     <div class="space-y-6">
                         <!-- Technical Indicators -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 class="font-semibold text-gray-900 mb-4">Technical Indicators</h3>
-                            
-                            <div class="space-y-4">
+                        <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-800 p-6">
+                            <h3
+                                class="text-sm font-bold text-white uppercase tracking-wider mb-6 flex items-center gap-2">
+                                <span class="w-1.5 h-4 bg-emerald-500 rounded-sm"></span>
+                                Technicals
+                            </h3>
+
+                            <div class="space-y-6">
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm text-gray-600">RSI (14)</span>
-                                        <span class="text-sm font-semibold text-gray-900" id="rsiValue">62.3</span>
+                                        <span class="text-xs font-bold text-slate-400">RSI (14)</span>
+                                        <span class="text-xs font-bold text-white mono-font" id="rsiValue">62.3</span>
                                     </div>
-                                    <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                                        <div id="rsiBar" class="h-full bg-yellow-500 rounded-full transition-all" style="width: 62%"></div>
+                                    <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                        <div id="rsiBar"
+                                            class="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                                            style="width: 62%"></div>
                                     </div>
-                                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                    <div
+                                        class="flex justify-between text-[10px] text-slate-600 mt-1 uppercase font-bold tracking-wider">
                                         <span>Oversold</span>
                                         <span>Overbought</span>
                                     </div>
                                 </div>
 
-                                <div class="pt-4 border-t border-gray-200">
-                                    <div class="flex items-center justify-between mb-1">
-                                        <span class="text-sm text-gray-600">SMA (20)</span>
-                                        <span class="text-sm font-semibold text-gray-900" id="smaValue">$178.45</span>
+                                <div class="pt-4 border-t border-slate-800">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs font-bold text-slate-400">SMA (20)</span>
+                                        <span class="text-xs font-bold text-white mono-font"
+                                            id="smaValue">$178.45</span>
                                     </div>
-                                </div>
-
-                                <div>
-                                    <div class="flex items-center justify-between mb-1">
-                                        <span class="text-sm text-gray-600">Volatility</span>
-                                        <span class="text-sm font-semibold text-gray-900" id="volatilityValue">1.8%</span>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-slate-400">Volatility</span>
+                                        <span class="text-xs font-bold text-white mono-font"
+                                            id="volatilityValue">1.8%</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- AI Analysis -->
-                        <div class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-sm p-6 text-white">
-                            <h3 class="font-semibold mb-3 flex items-center">
-                                <span class="mr-2">🤖</span>
-                                AI Analysis
+                        <div
+                            class="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
+                            <div
+                                class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full opacity-10 blur-[50px] transform translate-x-10 -translate-y-10">
+                            </div>
+
+                            <h3 class="font-bold mb-3 flex items-center gap-2 relative z-10">
+                                <span class="text-xl">🤖</span>
+                                AI Insight
                             </h3>
-                            <p class="text-sm opacity-90 leading-relaxed mb-4">Strong bullish momentum detected. RSI indicates healthy buying pressure. Consider entry points near support levels.</p>
-                            <button class="w-full px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors">
-                                Get Full Report
+                            <p class="text-xs font-medium text-indigo-100 leading-relaxed mb-4 relative z-10">
+                                Bullish divergence detected on MACD. Sentiment analysis of recent news suggests positive
+                                momentum. Recommend holding positions.
+                            </p>
+                            <button
+                                class="w-full px-4 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl text-xs font-bold uppercase tracking-wide transition-all hover:scale-[1.02] relative z-10">
+                                Generate Report
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Kafka Console -->
-                <div class="bg-gray-900 rounded-xl shadow-lg border border-gray-800 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+                <div class="bg-slate-950 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
                         <div class="flex items-center space-x-3">
-                            <span class="text-green-400 text-sm font-mono">●</span>
-                            <h3 class="font-semibold text-white">Kafka Stream Console</h3>
-                            <span class="text-xs text-gray-400 font-mono">market.ticks</span>
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                            <h3 class="font-bold text-slate-200 text-sm tracking-wide">Kafka Stream</h3>
+                            <span
+                                class="text-[10px] text-slate-500 font-mono bg-slate-900 px-2 py-0.5 rounded border border-slate-800">topic:
+                                market.ticks</span>
                         </div>
-                        <button class="text-xs text-gray-400 hover:text-white transition" onclick="document.getElementById('kafkaLogs').innerHTML = ''">
-                            Clear
+                        <button
+                            class="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-wider transition-colors"
+                            onclick="document.getElementById('kafkaLogs').innerHTML = ''">
+                            Clear Log
                         </button>
                     </div>
-                    
-                    <div class="p-6 font-mono text-xs text-green-400 h-64 overflow-y-auto" id="kafkaLogs"></div>
+
+                    <div class="p-6 font-mono text-xs text-slate-300 h-64 overflow-y-auto custom-scrollbar bg-slate-950/50 leading-relaxed"
+                        id="kafkaLogs">
+                        <!-- Logs injected here -->
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-                // Logout function
+        // Logout function
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('token');
@@ -228,7 +328,32 @@
             }
         }
 
-// Stock configuration
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await fetch('http://localhost:8080/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    const userNameElement = document.getElementById('userName');
+                    if (userNameElement) {
+                        const name = user.first_name ? `${user.first_name} ${user.last_name || ''}` : user.email.split('@')[0];
+                        userNameElement.textContent = name;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        loadUserProfile();
+
+        // Stock configuration
         const STOCKS = {
             'AAPL': { name: 'Apple Inc.', basePrice: 178.23, color: '#10b981' },
             'GOOGL': { name: 'Alphabet Inc.', basePrice: 142.50, color: '#3b82f6' },
@@ -242,7 +367,7 @@
         let chartInstance = null;
         const MAX_DATA_POINTS = 100;
         const PRICE_RANGE = 8; // ±$8 from base price
-        
+
         // Data storage for each stock
         const stockData = {};
         Object.keys(STOCKS).forEach(symbol => {
@@ -258,20 +383,23 @@
         // Initialize chart
         function initChart() {
             const ctx = document.getElementById('priceChart').getContext('2d');
-            
+
             // Generate initial data
             const now = Date.now();
             const initialData = [];
             const basePrice = STOCKS[currentSymbol].basePrice;
-            
+
             for (let i = 0; i < MAX_DATA_POINTS; i++) {
                 const timestamp = now - (MAX_DATA_POINTS - i) * 1000;
                 const price = basePrice + (Math.random() - 0.5) * 4;
                 initialData.push({ x: timestamp, y: price });
             }
-            
+
             stockData[currentSymbol].prices = initialData;
             stockData[currentSymbol].currentPrice = initialData[initialData.length - 1].y;
+
+            Chart.defaults.color = '#64748b';
+            Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
@@ -279,12 +407,19 @@
                     datasets: [{
                         data: initialData,
                         borderColor: STOCKS[currentSymbol].color,
-                        backgroundColor: 'transparent',
-                        borderWidth: 1.5,
-                        fill: false,
-                        tension: 0.1,
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                            gradient.addColorStop(0, STOCKS[currentSymbol].color + '40'); // Hex + opacity
+                            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                            return gradient;
+                        },
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
                         pointRadius: 0,
-                        pointHoverRadius: 0
+                        pointHoverRadius: 4,
+                        pointHoverBackgroundColor: '#fff'
                     }]
                 },
                 options: {
@@ -298,20 +433,17 @@
                         legend: { display: false },
                         tooltip: {
                             enabled: true,
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleColor: '#9ca3af',
+                            backgroundColor: '#1e293b',
+                            titleColor: '#cbd5e1',
                             bodyColor: '#fff',
-                            borderColor: '#374151',
+                            borderColor: '#334155',
                             borderWidth: 1,
                             padding: 12,
                             displayColors: false,
+                            cornerRadius: 12,
                             callbacks: {
-                                label: function(context) {
-                                    return '$' + context.parsed.y.toFixed(2) + ' USD';
-                                },
-                                title: function(context) {
-                                    const date = new Date(context[0].parsed.x);
-                                    return date.toLocaleTimeString();
+                                label: function (context) {
+                                    return '$' + context.parsed.y.toFixed(2);
                                 }
                             }
                         }
@@ -321,34 +453,29 @@
                             type: 'time',
                             time: {
                                 unit: 'minute',
-                                displayFormats: {
-                                    minute: 'h:mm a'
-                                }
+                                displayFormats: { minute: 'h:mm a' }
                             },
-                            grid: { 
-                                display: false,
-                                drawBorder: false
+                            grid: {
+                                display: false
                             },
-                            ticks: { 
-                                color: '#6b7280',
-                                maxTicksLimit: 8,
-                                font: { size: 10 }
+                            ticks: {
+                                color: '#475569',
+                                maxTicksLimit: 6,
+                                font: { size: 10, weight: 'bold' }
                             },
                             border: { display: false }
                         },
                         y: {
                             min: STOCKS[currentSymbol].basePrice - PRICE_RANGE,
                             max: STOCKS[currentSymbol].basePrice + PRICE_RANGE,
-                            grid: { 
-                                color: '#374151',
+                            grid: {
+                                color: '#1e293b',
                                 drawBorder: false,
-                                lineWidth: 0.5
                             },
-                            ticks: { 
-                                color: '#6b7280',
-                                count: 6,
-                                font: { size: 10 },
-                                callback: function(value) {
+                            ticks: {
+                                color: '#475569',
+                                font: { size: 10, family: 'JetBrains Mono' },
+                                callback: function (value) {
                                     return value.toFixed(0);
                                 }
                             },
@@ -365,36 +492,36 @@
             const stock = stockData[symbol];
             const basePrice = STOCKS[symbol].basePrice;
             const currentPrice = stock.currentPrice;
-            
+
             // Mean reversion
             const deviation = currentPrice - basePrice;
             const meanReversionForce = -deviation * 0.08;
-            
+
             // Random walk
             const randomChange = (Math.random() - 0.5) * 0.4;
-            
+
             // Calculate new price
             let newPrice = currentPrice + meanReversionForce + randomChange;
-            
+
             // Constrain to range
             const minPrice = basePrice - PRICE_RANGE;
             const maxPrice = basePrice + PRICE_RANGE;
             newPrice = Math.max(minPrice, Math.min(maxPrice, newPrice));
-            
+
             // Update stock data
             stock.currentPrice = newPrice;
             stock.highPrice = Math.max(stock.highPrice, newPrice);
             stock.lowPrice = Math.min(stock.lowPrice, newPrice);
-            
+
             // Add to prices array
             const timestamp = Date.now();
             stock.prices.push({ x: timestamp, y: newPrice });
-            
+
             // Keep only last MAX_DATA_POINTS
             if (stock.prices.length > MAX_DATA_POINTS) {
                 stock.prices.shift();
             }
-            
+
             return newPrice;
         }
 
@@ -402,11 +529,11 @@
         function updateChart() {
             const newPrice = generatePrice(currentSymbol);
             const stock = stockData[currentSymbol];
-            
+
             // Update chart data
             chartInstance.data.datasets[0].data = [...stock.prices];
             chartInstance.update('none');
-            
+
             // Update UI
             updatePriceDisplay();
         }
@@ -418,44 +545,53 @@
             const currentPrice = stock.currentPrice;
             const change = currentPrice - basePrice;
             const changePercent = (change / basePrice) * 100;
-            
+
             document.getElementById('currentPrice').textContent = '$' + currentPrice.toFixed(2);
             document.getElementById('openPrice').textContent = '$' + stock.openPrice.toFixed(2);
             document.getElementById('highPrice').textContent = '$' + stock.highPrice.toFixed(2);
             document.getElementById('lowPrice').textContent = '$' + stock.lowPrice.toFixed(2);
             document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
-            
+
             const priceChangeEl = document.getElementById('priceChange');
             const changeSign = change >= 0 ? '+' : '';
             priceChangeEl.textContent = `${changeSign}${change.toFixed(2)} (${changeSign}${changePercent.toFixed(2)}%)`;
-            
+
             if (change >= 0) {
-                priceChangeEl.className = 'text-sm font-medium text-green-400';
+                priceChangeEl.className = 'text-sm font-bold bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-lg border border-emerald-500/20';
                 chartInstance.data.datasets[0].borderColor = '#10b981';
             } else {
-                priceChangeEl.className = 'text-sm font-medium text-red-400';
-                chartInstance.data.datasets[0].borderColor = '#ef4444';
+                priceChangeEl.className = 'text-sm font-bold bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded-lg border border-rose-500/20';
+                chartInstance.data.datasets[0].borderColor = '#f43f5e';
             }
+            // Update gradient based on new color
+            chartInstance.data.datasets[0].backgroundColor = (context) => {
+                const ctx = context.chart.ctx;
+                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+                const color = change >= 0 ? '#10b981' : '#f43f5e';
+                gradient.addColorStop(0, color + '40');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                return gradient;
+            };
         }
 
         // Switch symbol
-        document.getElementById('symbolSelect').addEventListener('change', function(e) {
+        document.getElementById('symbolSelect').addEventListener('change', function (e) {
             currentSymbol = e.target.value;
-            
+
             // Initialize data if needed
             if (stockData[currentSymbol].prices.length === 0) {
                 const now = Date.now();
                 const basePrice = STOCKS[currentSymbol].basePrice;
-                
+
                 for (let i = 0; i < MAX_DATA_POINTS; i++) {
                     const timestamp = now - (MAX_DATA_POINTS - i) * 1000;
                     const price = basePrice + (Math.random() - 0.5) * 4;
                     stockData[currentSymbol].prices.push({ x: timestamp, y: price });
                 }
-                
+
                 stockData[currentSymbol].currentPrice = stockData[currentSymbol].prices[stockData[currentSymbol].prices.length - 1].y;
             }
-            
+
             // Update chart
             document.getElementById('chartSymbol').textContent = currentSymbol;
             chartInstance.data.datasets[0].data = [...stockData[currentSymbol].prices];
@@ -463,7 +599,7 @@
             chartInstance.options.scales.y.min = STOCKS[currentSymbol].basePrice - PRICE_RANGE;
             chartInstance.options.scales.y.max = STOCKS[currentSymbol].basePrice + PRICE_RANGE;
             chartInstance.update();
-            
+
             updatePriceDisplay();
         });
 
@@ -472,22 +608,22 @@
             const rsi = Math.max(0, Math.min(100, parseFloat(document.getElementById('rsiValue').textContent) + (Math.random() - 0.5) * 5));
             document.getElementById('rsiValue').textContent = rsi.toFixed(1);
             document.getElementById('rsiBar').style.width = rsi + '%';
-            
+
             const rsiBar = document.getElementById('rsiBar');
             if (rsi > 70) {
-                rsiBar.className = 'h-full bg-red-500 rounded-full transition-all';
+                rsiBar.className = 'h-full bg-rose-500 rounded-full transition-all duration-500';
             } else if (rsi < 30) {
-                rsiBar.className = 'h-full bg-green-500 rounded-full transition-all';
+                rsiBar.className = 'h-full bg-emerald-500 rounded-full transition-all duration-500';
             } else {
-                rsiBar.className = 'h-full bg-yellow-500 rounded-full transition-all';
+                rsiBar.className = 'h-full bg-amber-500 rounded-full transition-all duration-500';
             }
-            
+
             const sma = stockData[currentSymbol].currentPrice * (1 + (Math.random() - 0.5) * 0.01);
             document.getElementById('smaValue').textContent = '$' + sma.toFixed(2);
-            
+
             const volume = (Math.random() * 50 + 30).toFixed(1);
             document.getElementById('volumeValue').textContent = volume + 'M';
-            
+
             const volatility = (Math.random() * 2 + 0.5).toFixed(1);
             document.getElementById('volatilityValue').textContent = volatility + '%';
         }
@@ -500,19 +636,21 @@
             const price = stockData[symbol].currentPrice.toFixed(2);
             const volume = Math.floor(Math.random() * 1000000) + 500000;
             const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-            
+
             const logEntry = document.createElement('div');
-            logEntry.className = 'mb-2 hover:bg-gray-800 px-2 py-1 rounded transition';
+            logEntry.className = 'mb-1 hover:bg-white/5 py-1 px-2 rounded -mx-2 transition flex items-center gap-3 border-b border-white/5 pb-1';
             logEntry.innerHTML = `
-                <span class="text-gray-500">[${timestamp}]</span>
-                <span class="text-blue-400">TRADE</span>
-                <span class="text-yellow-400">${symbol}</span>
-                <span class="text-white">price:</span> <span class="text-green-400">$${price}</span>
-                <span class="text-white">vol:</span> <span class="text-purple-400">${volume.toLocaleString()}</span>
+                <span class="text-slate-500 w-36 shrink-0 font-mono text-[10px]">${timestamp}</span>
+                <span class="text-blue-400 font-bold shrink-0 w-12">TRD</span>
+                <span class="text-amber-400 font-bold shrink-0 w-16">${symbol}</span>
+                <div class="flex-1 flex justify-between">
+                     <span class="text-emerald-400 font-mono">$${price}</span>
+                     <span class="text-slate-400 font-mono text-[10px]">${volume.toLocaleString()}</span>
+                </div>
             `;
-            
+
             kafkaLogs.insertBefore(logEntry, kafkaLogs.firstChild);
-            
+
             while (kafkaLogs.children.length > 20) {
                 kafkaLogs.removeChild(kafkaLogs.lastChild);
             }
@@ -533,26 +671,25 @@
 
         function connectWebSocket() {
             ws = new WebSocket('ws://localhost:8080/ws/stocks');
-            
-            ws.onopen = function() {
+
+            ws.onopen = function () {
                 console.log('WebSocket connected');
                 useRealData = true;
             };
-            
-            ws.onmessage = function(event) {
+
+            ws.onmessage = function (event) {
                 const data = JSON.parse(event.data);
                 handleRealTimeData(data);
             };
-            
-            ws.onerror = function(error) {
+
+            ws.onerror = function (error) {
                 console.error('WebSocket error:', error);
                 useRealData = false;
             };
-            
-            ws.onclose = function() {
+
+            ws.onclose = function () {
                 console.log('WebSocket disconnected');
                 useRealData = false;
-                // Reconnect after 5 seconds
                 setTimeout(connectWebSocket, 5000);
             };
         }
@@ -560,63 +697,56 @@
         function handleRealTimeData(data) {
             const symbol = data.symbol;
             const price = data.price;
-            
-            // Update stock data
+
             if (stockData[symbol]) {
                 stockData[symbol].currentPrice = price;
                 stockData[symbol].highPrice = Math.max(stockData[symbol].highPrice, price);
                 stockData[symbol].lowPrice = Math.min(stockData[symbol].lowPrice, price);
-                
+
                 if (data.open) stockData[symbol].openPrice = data.open;
-                
-                // Add to prices array
+
                 const timestamp = Date.now();
                 stockData[symbol].prices.push({ x: timestamp, y: price });
-                
+
                 if (stockData[symbol].prices.length > MAX_DATA_POINTS) {
                     stockData[symbol].prices.shift();
                 }
-                
-                // Update chart if this is the current symbol
+
                 if (symbol === currentSymbol) {
                     chartInstance.data.datasets[0].data = [...stockData[symbol].prices];
                     chartInstance.update('none');
                     updatePriceDisplay();
                 }
             }
-            
-            // Add to Kafka logs
             addKafkaLogFromData(data);
         }
 
         function addKafkaLogFromData(data) {
             const kafkaLogs = document.getElementById('kafkaLogs');
             const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-            
+
             const logEntry = document.createElement('div');
-            logEntry.className = 'mb-2 hover:bg-gray-800 px-2 py-1 rounded transition';
+            logEntry.className = 'mb-1 hover:bg-white/5 py-1 px-2 rounded -mx-2 transition flex items-center gap-3 border-b border-white/5 pb-1';
             logEntry.innerHTML = `
-                <span class="text-gray-500">[${timestamp}]</span>
-                <span class="text-blue-400">TRADE</span>
-                <span class="text-yellow-400">${data.symbol}</span>
-                <span class="text-white">price:</span> <span class="text-green-400">$${data.price.toFixed(2)}</span>
-                <span class="text-white">vol:</span> <span class="text-purple-400">${data.volume ? data.volume.toLocaleString() : 'N/A'}</span>
-                ${data.source ? `<span class="text-gray-500">[${data.source}]</span>` : ''}
+                <span class="text-slate-500 w-36 shrink-0 font-mono text-[10px]">${timestamp}</span>
+                <span class="text-blue-400 font-bold shrink-0 w-12">TRD</span>
+                <span class="text-amber-400 font-bold shrink-0 w-16">${data.symbol}</span>
+                <div class="flex-1 flex justify-between">
+                     <span class="text-emerald-400 font-mono">$${data.price.toFixed(2)}</span>
+                     <span class="text-slate-400 font-mono text-[10px]">${data.volume ? data.volume.toLocaleString() : 'N/A'}</span>
+                </div>
             `;
-            
+
             kafkaLogs.insertBefore(logEntry, kafkaLogs.firstChild);
-            
+
             while (kafkaLogs.children.length > 20) {
                 kafkaLogs.removeChild(kafkaLogs.lastChild);
             }
         }
 
-        // Start stock streaming
         async function startStockStream() {
             try {
                 const response = await fetch('/api/stocks/start-stream', { method: 'POST' });
-                const data = await response.json();
-                console.log('Stock stream started:', data);
             } catch (error) {
                 console.error('Error starting stock stream:', error);
             }
@@ -624,10 +754,10 @@
 
         // Set current date
         const currentDate = new Date();
-        const dateStr = currentDate.toLocaleDateString('en-US', { 
-            weekday: 'short', 
-            month: 'short', 
-            day: 'numeric' 
+        const dateStr = currentDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
         });
         document.getElementById('sidebarDate').textContent = dateStr;
 
@@ -660,4 +790,5 @@
         }
     </script>
 </body>
+
 </html>
