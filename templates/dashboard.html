@@ -1,158 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - AstraFlow</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 20px;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
+
+<body class="bg-indigo-50/30 overflow-hidden">
+    <!-- Background Decor -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 opacity-40 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-300/30 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-300/30 rounded-full blur-[120px]">
+        </div>
+    </div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-            <div class="p-4 border-b border-gray-200">
-                <div class="font-semibold text-gray-900 mb-1">User</div>
-                <div class="text-sm text-gray-500">Admin</div>
+        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-20 transition-all duration-300">
+            <!-- User Section -->
+            <div class="p-6 border-b border-slate-800">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-lg font-bold shadow-lg shadow-indigo-500/30">
+                        AF</div>
+                    <span class="text-xl font-bold tracking-tight">AstraFlow</span>
+                </div>
+                <div class="bg-slate-800/50 rounded-xl p-3 flex items-center space-x-3 border border-slate-700/50">
+                    <div
+                        class="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center text-xs font-bold">
+                        U</div>
+                    <div>
+                        <div class="font-medium text-sm text-slate-200" id="userNameSidebar">User</div>
+                        <div class="text-xs text-slate-500">Admin Workspace</div>
+                    </div>
+                </div>
             </div>
 
-            <nav class="p-4 space-y-1 border-b border-gray-200">
-                <a href="/" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>🏠</span>
-                    <span>Home</span>
+            <!-- Main Navigation -->
+            <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3 px-2">Menu</div>
+
+                <a href="/"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">🏠</span>
+                    <span class="font-medium">Home</span>
                 </a>
-                <a href="/dashboard" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-purple-50 text-purple-600 text-sm">
-                    <span>📊</span>
-                    <span>Dashboard</span>
+                <a href="/dashboard"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-900/20 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">📊</span>
+                    <span class="font-medium">Dashboard</span>
                 </a>
-                <a href="/collections" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>📚</span>
-                    <span>Collections</span>
+                <a href="/collections"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">📚</span>
+                    <span class="font-medium">Collections</span>
                 </a>
-                <a href="/workspace" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💼</span>
-                    <span>Workspace</span>
+                <a href="/workspace"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">💼</span>
+                    <span class="font-medium">Workspace</span>
                 </a>
-                <a href="/chat" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>💭</span>
-                    <span>Chat</span>
+                <a href="/chat"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">💭</span>
+                    <span class="font-medium">Chat</span>
                 </a>
-                <a href="/workflows" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>⚙️</span>
-                    <span>Workflows</span>
+                <a href="/workflows"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">⚙️</span>
+                    <span class="font-medium">Workflows</span>
                 </a>
-                <a href="/stocks" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>📈</span>
-                    <span>Stocks</span>
+                <a href="/stocks"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">📈</span>
+                    <span class="font-medium">Stocks</span>
                 </a>
-                <a href="/github-docs" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm">
-                    <span>🚀</span>
-                    <span>GitHub Docs</span>
+                <a href="/github-docs"
+                    class="flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 group">
+                    <span class="group-hover:scale-110 transition-transform duration-200">🚀</span>
+                    <span class="font-medium">GitHub Docs</span>
                 </a>
             </nav>
 
-            <div class="flex-1"></div>
-
-            <div class="p-4 border-t border-gray-200">
-                <a href="/settings" class="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm mb-2">
+            <!-- Settings & Date -->
+            <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+                <a href="/settings"
+                    class="flex items-center space-x-3 px-4 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-sm mb-2 transition-colors">
                     <span>⚙️</span>
                     <span>Settings</span>
                 </a>
-                <button onclick="logout()" class="w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 text-sm mb-2">
+                <button onclick="logout()"
+                    class="w-full flex items-center space-x-3 px-4 py-2 rounded-lg text-red-500 hover:bg-red-500/10 hover:text-red-400 text-sm mb-2 transition-colors">
                     <span>🚪</span>
                     <span>Logout</span>
                 </button>
-                <div class="text-xs text-gray-500 px-3" id="sidebarDate"></div>
+                <div class="text-xs text-slate-600 px-4 mt-2 font-medium tracking-wide" id="sidebarDate"></div>
             </div>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto custom-scrollbar relative z-10">
             <div class="p-8 max-w-7xl mx-auto">
                 <!-- Welcome Section -->
-                <div class="mb-8">
-                    <div class="text-sm text-gray-500 mb-2" id="currentDate"></div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-3">Hello, <span id="userName">User</span></h1>
-                    <p class="text-xl text-gray-400 mb-4">How can I help you today?</p>
-                    
+                <div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <div class="text-sm font-semibold text-indigo-600 mb-2 uppercase tracking-wide"
+                            id="currentDate"></div>
+                        <h1 class="text-4xl font-bold text-slate-900 mb-2 tracking-tight">Welcome back, <span
+                                id="userName" class="gradient-text">User</span></h1>
+                        <p class="text-lg text-slate-500">Here's what's happening today.</p>
+                    </div>
+
                     <div class="flex flex-wrap gap-3">
-                        <button class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-colors">+ Add AI</button>
-                        <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">Get tasks updates</button>
-                        <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">Create workspace</button>
-                        <button class="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">Connect apps</button>
+                        <button onclick="window.location.href='/chat'"
+                            class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl text-sm font-semibold shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                            <span>✨</span> Add AI
+                        </button>
+                        <button onclick="window.location.reload()"
+                            class="px-5 py-2.5 bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold shadow-sm hover:bg-slate-50 transition-all duration-300">
+                            Get tasks updates
+                        </button>
+                        <button onclick="window.location.href='/collections'"
+                            class="px-5 py-2.5 bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold shadow-sm hover:bg-slate-50 transition-all duration-300">
+                            Create workspace
+                        </button>
+                        <button onclick="window.location.href='/settings'"
+                            class="px-5 py-2.5 bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold shadow-sm hover:bg-slate-50 transition-all duration-300">
+                            Connect Apps
+                        </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Left Column - Tasks and Goals -->
-                    <div class="lg:col-span-2 space-y-6">
+                    <div class="lg:col-span-2 space-y-8">
                         <!-- My Tasks -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-lg">📋</span>
-                                    <h2 class="text-lg font-semibold text-gray-900">My Tasks</h2>
+                        <div class="glass-card rounded-2xl shadow-xl shadow-slate-200/50 p-6 border border-white/50">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-xl text-indigo-600">
+                                        📋</div>
+                                    <h2 class="text-xl font-bold text-slate-900">My Tasks</h2>
                                 </div>
+                                <button onclick="showAddTaskModal()"
+                                    class="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-sm font-semibold transition-colors">
+                                    + Add New
+                                </button>
                             </div>
 
-                            <div class="mb-4" id="tasksContainer">
+                            <div class="mb-2" id="tasksContainer">
                                 <!-- Tasks will be loaded dynamically -->
                             </div>
-
-                            <button onclick="showAddTaskModal()" class="text-sm text-gray-500 hover:text-gray-700 ml-6">+ Add task</button>
                         </div>
 
                         <!-- My Goals -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-lg">🎯</span>
-                                    <h2 class="text-lg font-semibold text-gray-900">My Goals</h2>
+                        <div class="glass-card rounded-2xl shadow-xl shadow-slate-200/50 p-6 border border-white/50">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-3">
+                                    <div
+                                        class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-xl text-green-600">
+                                        🎯</div>
+                                    <h2 class="text-xl font-bold text-slate-900">My Goals</h2>
                                 </div>
                             </div>
 
-                            <div class="space-y-4" id="goalsContainer"></div>
+                            <div class="space-y-6" id="goalsContainer"></div>
                         </div>
                     </div>
 
                     <!-- Right Column -->
-                    <div class="space-y-6">
+                    <div class="space-y-8">
                         <!-- Projects -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="glass-card rounded-2xl shadow-xl shadow-slate-200/50 p-6 border border-white/50">
                             <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-lg font-semibold text-gray-900">Projects</h2>
+                                <h2 class="text-lg font-bold text-slate-900">Projects</h2>
                             </div>
 
-                            <button class="w-full flex items-center space-x-3 p-3 border-2 border-dashed border-gray-200 rounded-lg hover:border-gray-300 hover:bg-gray-50 mb-3 transition-colors">
-                                <div class="w-8 h-8 bg-gray-100 rounded flex items-center justify-center text-gray-400">+</div>
-                                <span class="text-gray-600 font-medium">Create new project</span>
+                            <button
+                                class="w-full flex items-center space-x-3 p-3 border-2 border-dashed border-slate-200 rounded-xl hover:border-indigo-300 hover:bg-indigo-50/50 mb-4 transition-all group">
+                                <div
+                                    class="w-8 h-8 bg-slate-100 group-hover:bg-indigo-200 rounded-lg flex items-center justify-center text-slate-400 group-hover:text-indigo-600 transition-colors">
+                                    +</div>
+                                <span class="text-slate-600 font-medium group-hover:text-indigo-700">Create new
+                                    project</span>
                             </button>
 
                             <div class="space-y-3" id="projectsContainer"></div>
                         </div>
 
                         <!-- Calendar -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="glass-card rounded-2xl shadow-xl shadow-slate-200/50 p-6 border border-white/50">
                             <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-lg font-semibold text-gray-900">Calendar</h2>
+                                <h2 class="text-lg font-bold text-slate-900">Calendar</h2>
                             </div>
 
-                            <div class="grid grid-cols-7 gap-2 mb-4" id="weekDays"></div>
+                            <div class="grid grid-cols-7 gap-2 mb-2" id="weekDays"></div>
                         </div>
 
                         <!-- Reminders -->
-                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                        <div class="glass-card rounded-2xl shadow-xl shadow-slate-200/50 p-6 border border-white/50">
                             <div class="flex items-center justify-between mb-4">
-                                <h2 class="text-lg font-semibold text-gray-900">Reminders</h2>
+                                <h2 class="text-lg font-bold text-slate-900">Reminders</h2>
                             </div>
 
-                            <div class="space-y-3">
-                                <div class="flex items-start space-x-3 group">
-                                    <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-gray-300">
-                                    <p class="text-sm text-gray-700 flex-1">Assess any new risks identified in the morning meeting</p>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3 group cursor-pointer">
+                                    <input type="checkbox"
+                                        class="w-5 h-5 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                    <p
+                                        class="text-sm text-slate-700 flex-1 group-hover:text-indigo-700 transition-colors">
+                                        Assess any new risks identified in the morning meeting</p>
                                 </div>
-                                <div class="flex items-start space-x-3 group">
-                                    <input type="checkbox" class="w-4 h-4 mt-0.5 rounded border-gray-300">
-                                    <p class="text-sm text-gray-700 flex-1">Outline key points by those insight stand on another</p>
+                                <div class="flex items-start space-x-3 group cursor-pointer">
+                                    <input type="checkbox"
+                                        class="w-5 h-5 mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                                    <p
+                                        class="text-sm text-slate-700 flex-1 group-hover:text-indigo-700 transition-colors">
+                                        Outline key points by those insight stand on another</p>
                                 </div>
                             </div>
                         </div>
@@ -163,53 +261,79 @@
     </div>
 
     <!-- Add Task Modal -->
-    <div id="addTaskModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div id="addTaskModal"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 transition-all duration-300">
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Add New Task</h3>
-                    <button onclick="hideAddTaskModal()" class="text-gray-400 hover:text-gray-600">
-                        <span class="text-xl">&times;</span>
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 transform transition-all scale-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-slate-900">Add New Task</h3>
+                    <button onclick="hideAddTaskModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
-                
+
                 <form id="addTaskForm" onsubmit="addTask(event)">
-                    <div class="space-y-4">
+                    <div class="space-y-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                            <input type="text" id="taskTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Title</label>
+                            <input type="text" id="taskTitle" required
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder-slate-400"
+                                placeholder="What needs to be done?">
                         </div>
-                        
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Description <span class="text-gray-400">(optional)</span></label>
-                            <textarea id="taskDescription" rows="3" placeholder="Add a description for your task..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Description <span
+                                    class="text-slate-400 font-normal">(optional)</span></label>
+                            <textarea id="taskDescription" rows="3" placeholder="Add details..."
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all placeholder-slate-400"></textarea>
                         </div>
-                        
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Priority <span class="text-gray-400">(optional)</span></label>
-                                <select id="taskPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                    <option value="low">Low</option>
-                                    <option value="medium" selected>Medium</option>
-                                    <option value="high">High</option>
-                                </select>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Priority</label>
+                                <div class="relative">
+                                    <select id="taskPriority"
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white appearance-none">
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                    <div class="absolute right-3 top-3.5 pointer-events-none text-slate-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
+                                            fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </div>
                             </div>
-                            
+
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Due Date <span class="text-gray-400">(optional)</span></label>
-                                <input type="date" id="taskDueDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Due Date</label>
+                                <input type="date" id="taskDueDate"
+                                    class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-600">
                             </div>
                         </div>
-                        
+
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Project <span class="text-gray-400">(optional)</span></label>
-                            <input type="text" id="taskProject" placeholder="e.g., HUMCOIKERS" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Project <span
+                                    class="text-slate-400 font-normal">(optional)</span></label>
+                            <input type="text" id="taskProject" placeholder="e.g., Marketing"
+                                class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:border-indigo-300 transition-all placeholder-slate-400">
                         </div>
                     </div>
-                    
-                    <div class="flex justify-end space-x-3 mt-6">
-                        <button type="button" onclick="hideAddTaskModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Add Task</button>
+
+                    <div class="flex justify-end space-x-3 mt-8">
+                        <button type="button" onclick="hideAddTaskModal()"
+                            class="px-5 py-2.5 text-slate-600 hover:text-slate-900 font-medium transition-colors">Cancel</button>
+                        <button type="submit"
+                            class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 font-semibold transition-all duration-300">Add
+                            Task</button>
                     </div>
                 </form>
             </div>
@@ -230,6 +354,7 @@
 
         // Task management functions
         function showAddTaskModal() {
+            document.getElementById('taskDueDate').min = new Date().toISOString().split('T')[0];
             document.getElementById('addTaskModal').classList.remove('hidden');
         }
 
@@ -240,7 +365,7 @@
 
         async function addTask(event) {
             event.preventDefault();
-            
+
             const token = localStorage.getItem('token');
             if (!token) {
                 window.location.href = '/login';
@@ -334,11 +459,12 @@
 
         function renderTasks() {
             const container = document.getElementById('tasksContainer');
-            
+
             if (tasks.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <p>No tasks yet. Click "Add task" to create your first task.</p>
+                    <div class="text-center py-10 text-slate-500 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                        <p>No tasks yet.</p>
+                        <button onclick="showAddTaskModal()" class="text-indigo-600 font-semibold hover:text-indigo-800 mt-2">Create your first task</button>
                     </div>
                 `;
                 return;
@@ -357,37 +483,37 @@
             let html = '';
             Object.entries(tasksByProject).forEach(([project, projectTasks]) => {
                 const pendingTasks = projectTasks.filter(t => t.status !== 'completed');
-                
+
                 html += `
-                    <div class="mb-4">
+                    <div class="mb-5 last:mb-0">
                         <div class="flex items-center space-x-2 mb-3">
-                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded">${project}</span>
-                            <span class="text-sm text-gray-500">• ${pendingTasks.length} tasks</span>
+                            <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-md uppercase tracking-wider">${project}</span>
+                            <span class="text-xs text-slate-400 font-medium">• ${pendingTasks.length} tasks</span>
                         </div>
-                        <div class="space-y-2 ml-6">
+                        <div class="space-y-2">
                 `;
 
                 projectTasks.forEach(task => {
                     const priorityColors = {
-                        high: 'bg-red-100 text-red-700',
-                        medium: 'bg-yellow-100 text-yellow-700',
-                        low: 'bg-gray-100 text-gray-700'
+                        high: 'bg-red-50 text-red-600 border border-red-100',
+                        medium: 'bg-amber-50 text-amber-600 border border-amber-100',
+                        low: 'bg-emerald-50 text-emerald-600 border border-emerald-100'
                     };
 
                     const dueDateText = task.due_date ? formatDueDate(task.due_date) : '';
                     const isCompleted = task.status === 'completed';
 
                     html += `
-                        <div class="flex items-center justify-between py-2 hover:bg-gray-50 rounded-lg px-2">
-                            <div class="flex items-center space-x-3 flex-1">
+                        <div class="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all group">
+                            <div class="flex items-center space-x-4 flex-1">
                                 <input type="checkbox" ${isCompleted ? 'checked' : ''} 
                                        onchange="toggleTaskStatus('${task.id}', '${task.status}')"
-                                       class="w-4 h-4 rounded border-gray-300">
-                                <span class="text-gray-900 ${isCompleted ? 'line-through text-gray-500' : ''}">${task.title}</span>
+                                       class="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer">
+                                <span class="text-sm font-medium ${isCompleted ? 'line-through text-slate-400' : 'text-slate-700 group-hover:text-indigo-900'} transition-colors">${task.title}</span>
                             </div>
                             <div class="flex items-center space-x-3">
-                                <span class="px-2 py-1 text-xs font-medium rounded ${priorityColors[task.priority]}">${task.priority}</span>
-                                ${dueDateText ? `<span class="text-sm text-gray-600">${dueDateText}</span>` : ''}
+                                <span class="px-2 py-0.5 text-[10px] uppercase font-bold rounded-md ${priorityColors[task.priority]}">${task.priority}</span>
+                                ${dueDateText ? `<span class="text-xs text-slate-400 font-medium">${dueDateText}</span>` : ''}
                             </div>
                         </div>
                     `;
@@ -405,6 +531,9 @@
         function formatDueDate(dateString) {
             const dueDate = new Date(dateString);
             const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            dueDate.setHours(0, 0, 0, 0);
+
             const diffTime = dueDate - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -417,40 +546,40 @@
 
         // Set current date
         const currentDate = new Date();
-        document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            month: 'long', 
-            day: 'numeric' 
+        document.getElementById('currentDate').textContent = currentDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric'
         });
-        
+
         // Set sidebar date
-        const dateStr = currentDate.toLocaleDateString('en-US', { 
-            weekday: 'short', 
-            month: 'short', 
-            day: 'numeric' 
+        const dateStr = currentDate.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
         });
         document.getElementById('sidebarDate').textContent = dateStr;
 
-        // Load goals
+        // Load goals (Static for demo, upgraded UI)
         const goals = [
-            { title: 'Check Emails and Messages', project: 'Product launch • Me Projects', progress: 73, color: 'bg-teal-500' },
-            { title: 'Prepare a brief status update to the client', project: 'Product launch • Me Projects', progress: 11, color: 'bg-yellow-500' },
-            { title: 'Update project documentation', project: 'Team brainstorm • Me Projects', progress: 63, color: 'bg-teal-500' }
+            { title: 'Check Emails and Messages', project: 'Product launch • Me Projects', progress: 73, color: 'bg-teal-500', bg: 'bg-teal-100' },
+            { title: 'Prepare a brief status update', project: 'Product launch • Me Projects', progress: 25, color: 'bg-amber-500', bg: 'bg-amber-100' },
+            { title: 'Update project documentation', project: 'Team brainstorm • Me Projects', progress: 63, color: 'bg-indigo-500', bg: 'bg-indigo-100' }
         ];
 
         const goalsContainer = document.getElementById('goalsContainer');
         goals.forEach(goal => {
             goalsContainer.innerHTML += `
-                <div class="space-y-2">
+                <div class="space-y-3 p-4 bg-slate-50/50 rounded-xl border border-slate-100">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <h3 class="text-gray-900 font-medium">${goal.title}</h3>
-                            <p class="text-sm text-gray-500">${goal.project}</p>
+                            <h3 class="text-slate-800 font-semibold text-sm">${goal.title}</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">${goal.project}</p>
                         </div>
-                        <span class="text-sm font-semibold text-gray-900">${goal.progress}%</span>
+                        <span class="text-xs font-bold text-slate-700 bg-white px-2 py-1 rounded shadow-sm">${goal.progress}%</span>
                     </div>
-                    <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div class="h-full ${goal.color} rounded-full transition-all" style="width: ${goal.progress}%"></div>
+                    <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                        <div class="h-full ${goal.color} rounded-full transition-all duration-1000 ease-out" style="width: ${goal.progress}%"></div>
                     </div>
                 </div>
             `;
@@ -458,22 +587,23 @@
 
         // Load projects
         const projects = [
-            { name: 'Product launch', icon: '🚀', color: 'bg-gray-100', tasks: 4, members: 7 },
-            { name: 'Team brainstorm', icon: '💡', color: 'bg-blue-100', tasks: 4, members: 37 },
-            { name: 'Branding launch', icon: '💎', color: 'bg-cyan-100', tasks: 3, members: 6 }
+            { name: 'Product launch', icon: '🚀', color: 'bg-blue-100 text-blue-600', tasks: 4, members: 7 },
+            { name: 'Team brainstorm', icon: '💡', color: 'bg-amber-100 text-amber-600', tasks: 4, members: 37 },
+            { name: 'Branding launch', icon: '💎', color: 'bg-purple-100 text-purple-600', tasks: 3, members: 6 }
         ];
 
         const projectsContainer = document.getElementById('projectsContainer');
         projects.forEach(project => {
             projectsContainer.innerHTML += `
-                <div class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                <div class="flex items-center justify-between p-3 hover:bg-indigo-50/50 rounded-xl cursor-pointer transition-all border border-transparent hover:border-indigo-100 group">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 ${project.color} rounded flex items-center justify-center text-xl">${project.icon}</div>
+                        <div class="w-10 h-10 ${project.color} rounded-lg flex items-center justify-center text-lg shadow-sm">${project.icon}</div>
                         <div>
-                            <h3 class="font-medium text-gray-900">${project.name}</h3>
-                            <p class="text-xs text-gray-500">${project.tasks} tasks • ${project.members} Teammates</p>
+                            <h3 class="font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors text-sm">${project.name}</h3>
+                            <p class="text-xs text-slate-500">${project.tasks} tasks • ${project.members} Team</p>
                         </div>
                     </div>
+                     <div class="opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity">→</div>
                 </div>
             `;
         });
@@ -482,26 +612,52 @@
         const weekDays = document.getElementById('weekDays');
         const today = currentDate.getDay();
         const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        
+
         for (let i = 0; i < 7; i++) {
             const date = new Date(currentDate);
             date.setDate(currentDate.getDate() - today + i);
             const isToday = i === today;
-            
+
             weekDays.innerHTML += `
-                <div class="text-center">
-                    <div class="text-xs text-gray-500 mb-1">${days[i]}</div>
-                    <div class="w-8 h-8 mx-auto flex items-center justify-center rounded-lg text-sm ${
-                        isToday ? 'bg-gray-800 text-white font-semibold' : 'text-gray-700'
-                    }">
+                <div class="text-center group cursor-pointer p-2 rounded-xl hover:bg-indigo-50 transition-colors">
+                    <div class="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">${days[i]}</div>
+                    <div class="w-8 h-8 mx-auto flex items-center justify-center rounded-lg text-sm ${isToday ? 'bg-indigo-600 text-white font-bold shadow-md shadow-indigo-500/30' : 'text-slate-700 font-medium group-hover:text-indigo-700'
+                }">
                         ${date.getDate()}
                     </div>
                 </div>
             `;
         }
 
-        // Load tasks on page load
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await fetch('http://localhost:8080/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    const name = user.first_name ? `${user.first_name} ${user.last_name || ''}` : user.email.split('@')[0];
+
+                    const userNameEl = document.getElementById('userName');
+                    if (userNameEl) userNameEl.textContent = name;
+
+                    const sidebarName = document.getElementById('userNameSidebar');
+                    if (sidebarName) sidebarName.textContent = name;
+
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        loadUserProfile();
         loadTasks();
     </script>
 </body>
+
 </html>
