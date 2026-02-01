@@ -116,6 +116,53 @@ async def login(req: LoginRequest):
     logger.info(f"User logged in: {req.email}")
     return TokenResponse(access_token=token)
 
+@app.get("/api/user/profile")
+async def get_profile(user_id: str = Depends(get_current_user)):
+    cursor = await db.conn.execute(
+        "SELECT id, email, first_name, last_name, created_at FROM users WHERE id = ?",
+        (user_id,)
+    )
+    row = await cursor.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    return {
+        "id": row[0],
+        "email": row[1],
+        "first_name": row[2],
+        "last_name": row[3],
+        "created_at": row[4]
+    }
+
+class UpdateProfileRequest(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+@app.put("/api/user/profile")
+async def update_profile(req: UpdateProfileRequest, user_id: str = Depends(get_current_user)):
+    # Build update query dynamically
+    updates = []
+    values = []
+    
+    if req.first_name is not None:
+        updates.append("first_name = ?")
+        values.append(req.first_name)
+    
+    if req.last_name is not None:
+        updates.append("last_name = ?")
+        values.append(req.last_name)
+        
+    if not updates:
+        return {"status": "no changes"}
+        
+    values.append(user_id)
+    query = f"UPDATE users SET {', '.join(updates)} WHERE id = ?"
+    
+    await db.conn.execute(query, tuple(values))
+    await db.conn.commit()
+    
+    return {"status": "updated"}
+
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
